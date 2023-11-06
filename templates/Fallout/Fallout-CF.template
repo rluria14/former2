@@ -1,0 +1,8 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "EC2 Instances"
+Parameters:
+  AvailabilityZone:
+    Description: Name of availibility zone
+    Type: String
+    Default: us-east-1
+Resources:

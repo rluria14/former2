@@ -1,0 +1,2302 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "EC2 Instances"
+Parameters:
+  AvailabilityZone:
+    Description: Name of availibility zone
+    Type: String
+    Default: us-east-1
+Resources:
+  IAMUser:
+    Type: "AWS::IAM::User"
+    Properties:
+      Path: "/"
+      UserName: "CD_deployer"
+      Groups:
+        - !Ref IAMGroup3
+      Tags:
+        - Key: "AKIA25HQAJGKDSI5NJCV"
+          Value: "github-actions"
+        - Key: "AKIA25HQAJGKNTQZHQH7"
+          Value: "github-actions"
+        - Key: "AKIA25HQAJGKH2FKLF7N"
+          Value: "github-actions"
+        - Key: "AKIA25HQAJGKODTGMIQ4"
+          Value: "git-hub-actions"
+        - Key: "ServiceUser"
+          Value: "true"
+        - Key: "POC"
+          Value: "Mary Shultz"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
+
+  IAMGroup:
+    Type: "AWS::IAM::Group"
+    Properties:
+      Path: "/"
+      GroupName: !Ref IAMRole4
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AdministratorAccess"
+
+  IAMGroup2:
+    Type: "AWS::IAM::Group"
+    Properties:
+      Path: "/"
+      GroupName: "MFAGroup"
+      ManagedPolicyArns:
+        - !Sub "arn:aws:iam::${EC2PrefixList.OwnerId}:policy/SC-${EC2PrefixList.OwnerId}-pp-tzrqxdqk2inqu-MFAPolicy-1XYD9FD6ZHHM6"
+
+  IAMGroup3:
+    Type: "AWS::IAM::Group"
+    Properties:
+      Path: "/"
+      GroupName: "Deployer"
+      ManagedPolicyArns:
+        - !Sub "arn:aws:iam::${EC2PrefixList.OwnerId}:policy/github_action_policy"
+        - !Sub "arn:aws:iam::${EC2PrefixList.OwnerId}:policy/Github_ansible_policy"
+        - !Sub "arn:aws:iam::${EC2PrefixList.OwnerId}:policy/ECR_get_token"
+        - "arn:aws:iam::aws:policy/AmazonSSMFullAccess"
+        - "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
+        - "arn:aws:iam::aws:policy/AmazonECS_FullAccess"
+        - "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+        - "arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess"
+        - !Sub "arn:aws:iam::aws:policy/AmazonS3${IAMRole25}Access"
+        - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+
+  IAMRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: "AWS-QuickSetup-StackSet-Local-ExecutionRole"
+      AssumeRolePolicyDocument: !Sub "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::${EC2PrefixList.OwnerId}:role/${IAMRole3}\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+
+  IAMRole2:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: "AmazonSSMRoleForInstancesQuickSetup"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ec2.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+        - "arn:aws:iam::aws:policy/AmazonSSMPatchAssociation"
+      Description: "EC2 role for SSM for Quick-Setup"
+
+  IAMRole3:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: "AWS-QuickSetup-StackSet-Local-AdministrationRole"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudformation.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+
+  IAMRole4:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: !Ref IAMGroup
+      AssumeRolePolicyDocument: !Sub "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Federated\":\"arn:aws:iam::${EC2PrefixList.OwnerId}:saml-provider/Okta\"},\"Action\":\"sts:AssumeRoleWithSAML\",\"Condition\":{\"StringEquals\":{\"SAML:aud\":\"https://signin.aws.amazon.com/saml\"}}}]}"
+      MaxSessionDuration: 43200
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AdministratorAccess"
+      Description: ""
+      Tags:
+        - Key: "launch_name"
+          Value: "mxr-governance-okta-roles"
+        - Key: "version"
+          Value: "v3"
+        - Key: "ServiceCatalogPuppet:Actor"
+          Value: "Generated"
+        - Key: "Governance"
+          Value: "maxar"
+        - Key: "Project"
+          Value: "governance"
+        - Key: "Component"
+          Value: !Ref IAMGroup
+        - Key: "Environment"
+          Value: "prod"
+        - Key: "Department"
+          Value: "aws-governance"
+        - Key: "Contact"
+          Value: "aws-governance@maxar.com"
+
+  IAMRole5:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: !Sub "AWS-QuickSetup-HostMgmtRole-${AWS::Region}-yoogl"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ssm.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      Description: ""
+      Tags:
+        - Key: "QuickSetupVersion"
+          Value: "2.0"
+        - Key: "QuickSetupType"
+          Value: "Host Management"
+        - Key: "QuickSetupID"
+          Value: "yoogl"
+
+  IAMRole6:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/governance/"
+      RoleName: "CloudtrailLogsRole"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      Description: ""
+      Tags:
+        - Key: "Project"
+          Value: "cloudtrail"
+        - Key: "Department"
+          Value: "aws-governance"
+        - Key: "Environment"
+          Value: "prod"
+        - Key: "Governance"
+          Value: "maxar"
+        - Key: "Component"
+          Value: "cloudtrail-provisioner"
+        - Key: "Contact"
+          Value: "aws-governance@maxar.com"
+
+  IAMRole7:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/governance/"
+      RoleName: "DeleteDefaultVPCLambdaExecution"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+      Description: ""
+      Tags:
+        - Key: "launch_name"
+          Value: !Sub "delete-${ECSCluster2}-networking"
+        - Key: "Project"
+          Value: "account-vending-machine"
+        - Key: "Department"
+          Value: "aws-governance"
+        - Key: "Environment"
+          Value: "prod"
+        - Key: "Component"
+          Value: !Sub "delete-${ECSCluster2}-networking"
+        - Key: "version"
+          Value: "v3"
+        - Key: "ServiceCatalogPuppet:Actor"
+          Value: "Generated"
+        - Key: "Contact"
+          Value: "aws-governance@maxar.com"
+
+  IAMRole8:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: !Sub "${ElasticLoadBalancingV2TargetGroup5.TargetGroupName}-ecs-task-role"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ecs-tasks.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - !Sub "arn:aws:iam::${EC2PrefixList.OwnerId}:policy/${ElasticLoadBalancingV2TargetGroup5.TargetGroupName}-task-get-s3-policy"
+      Description: "Allows ECS tasks to call AWS services on your behalf."
+      Tags:
+        - Key: "POC"
+          Value: "Jim Taysom"
+        - Key: "Project"
+          Value: "Fallout"
+
+  IAMRole9:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: "ec2-cloudwatch"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ec2.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - !Sub "arn:aws:iam::${EC2PrefixList.OwnerId}:policy/custom-logs"
+      Description: "Allows EC2 instances to call AWS services on your behalf."
+      Tags:
+        - Key: "Name"
+          Value: "ec2-cloudwatch"
+
+  IAMRole10:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: "ECS-task-execution"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ecs-tasks.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - !Sub "arn:aws:iam::${EC2PrefixList.OwnerId}:policy/Fallout-Secret-Policy"
+        - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+        - "arn:aws:iam::aws:policy/AWSCloudMapDiscoverInstanceAccess"
+        - !Sub "arn:aws:iam::aws:policy/AmazonS3${IAMRole25}Access"
+        - "arn:aws:iam::aws:policy/job-function/NetworkAdministrator"
+        - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+      Description: "Allows ECS tasks to call AWS services on your behalf."
+      Tags:
+        - Key: "POC"
+          Value: "Mary Shultz"
+
+  IAMRole11:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: "ecsAutoscaleRole"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"application-autoscaling.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceAutoscaleRole"
+
+  IAMRole12:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: "ECS-Task-Execution-Role"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ecs-tasks.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - !Sub "arn:aws:iam::${EC2PrefixList.OwnerId}:policy/Fallout-Secret-Policy"
+        - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+        - !Sub "arn:aws:iam::aws:policy/AmazonS3${IAMRole25}Access"
+      Description: "Allows ECS tasks to call AWS services on your behalf."
+      Tags:
+        - Key: "POC"
+          Value: "Jim Taysom"
+        - Key: "Project"
+          Value: "Fallout"
+
+  IAMRole13:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/servicecatalog-puppet/"
+      RoleName: "EventBridgeFromSpoke"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"events.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      Description: ""
+      Tags:
+        - Key: "ServiceCatalogPuppet:Actor"
+          Value: "Framework"
+
+  IAMRole14:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: "ec2-container-instance-role"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ec2.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+        - "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+        - "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
+        - "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+        - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+      Description: "Allows EC2 instances to call AWS services on your behalf."
+      Tags:
+        - Key: "POC"
+          Value: "Mary Shultz"
+
+  IAMRole15:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: "ecsExternalInstanceRole"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ssm.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+        - "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+
+  IAMRole16:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: !Sub "${S3Bucket17}-ecs-role"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ecs-tasks.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - !Sub "arn:aws:iam::${EC2PrefixList.OwnerId}:policy/Fallout-Secret-Policy"
+        - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+        - "arn:aws:iam::aws:policy/AWSCloudMapDiscoverInstanceAccess"
+        - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+      Description: "Allows ECS tasks to call AWS services on your behalf."
+      Tags:
+        - Key: "POC"
+          Value: "Mary Shultz"
+
+  IAMRole17:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: "geo_s3_access"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ec2.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+      Description: "Allows EC2 instances to call AWS services on your behalf."
+
+  IAMRole18:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: "github_action_role"
+      AssumeRolePolicyDocument: !Sub "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::${EC2PrefixList.OwnerId}:user/CD_deployer\"},\"Action\":[\"sts:AssumeRole\",\"sts:TagSession\"]}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - !Sub "arn:aws:iam::${EC2PrefixList.OwnerId}:policy/Github_ansible_policy"
+      Description: ""
+
+  IAMRole19:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: "PowerUsers"
+      AssumeRolePolicyDocument: !Sub "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Federated\":\"arn:aws:iam::${EC2PrefixList.OwnerId}:saml-provider/Okta\"},\"Action\":\"sts:AssumeRoleWithSAML\",\"Condition\":{\"StringEquals\":{\"SAML:aud\":\"https://signin.aws.amazon.com/saml\"}}}]}"
+      MaxSessionDuration: 43200
+      ManagedPolicyArns:
+        - !Sub "arn:aws:iam::aws:policy/IAM${IAMRole25}Access"
+        - "arn:aws:iam::aws:policy/PowerUserAccess"
+      Description: ""
+      Tags:
+        - Key: "launch_name"
+          Value: "mxr-governance-okta-roles"
+        - Key: "Project"
+          Value: "governance"
+        - Key: "Department"
+          Value: "aws-governance"
+        - Key: "Environment"
+          Value: "prod"
+        - Key: "Governance"
+          Value: "maxar"
+        - Key: "Component"
+          Value: "governance-roles"
+        - Key: "version"
+          Value: "v3"
+        - Key: "ServiceCatalogPuppet:Actor"
+          Value: "Generated"
+        - Key: "Contact"
+          Value: "aws-governance@maxar.com"
+
+  IAMRole20:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: "GlueS3"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"glue.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole"
+        - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+      Description: "Allows Glue to call AWS services on your behalf. "
+      Tags:
+        - Key: "POC"
+          Value: "Mary Shultz"
+        - Key: "Project"
+          Value: "Fallout"
+
+  IAMRole21:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/servicecatalog-puppet/"
+      RoleName: "PuppetDeployInSpokeRole"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"codebuild.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      PermissionsBoundary: "arn:aws:iam::aws:policy/AdministratorAccess"
+      Description: ""
+      Tags:
+        - Key: "ServiceCatalogPuppet:Actor"
+          Value: "Framework"
+        - Key: "Governance"
+          Value: "maxar"
+        - Key: "Project"
+          Value: "governance"
+        - Key: "Component"
+          Value: "PuppetDeployInSpokeRole"
+        - Key: "Environment"
+          Value: "prod"
+        - Key: "Department"
+          Value: "aws-governance"
+        - Key: "Contact"
+          Value: "aws-governance@maxar.com"
+
+  IAMRole22:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: "power-user-role"
+      AssumeRolePolicyDocument: !Sub "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::${EC2PrefixList.OwnerId}:root\"},\"Action\":\"sts:AssumeRole\",\"Condition\":{\"Bool\":{\"aws:MultiFactorAuthPresent\":\"true\"}}}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/PowerUserAccess"
+      Description: ""
+      Tags:
+        - Key: "launch_name"
+          Value: "mxr-governance-mfa-policy"
+        - Key: "version"
+          Value: "v3"
+        - Key: "ServiceCatalogPuppet:Actor"
+          Value: "Generated"
+
+  IAMRole23:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: "rds-monitoring-role"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"monitoring.rds.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
+
+  IAMRole24:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: "OrganizationAccountAccessRole"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::398274688464:root\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      Tags:
+        - Key: "Governance"
+          Value: "maxar"
+        - Key: "Project"
+          Value: "governance"
+        - Key: "Component"
+          Value: "OrganizationAccountAccessRole"
+        - Key: "Environment"
+          Value: "prod"
+        - Key: "Department"
+          Value: "aws-governance"
+        - Key: "Contact"
+          Value: "aws-governance@maxar.com"
+
+  IAMRole25:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: "ReadOnly"
+      AssumeRolePolicyDocument: !Sub "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Federated\":\"arn:aws:iam::${EC2PrefixList.OwnerId}:saml-provider/Okta\"},\"Action\":\"sts:AssumeRoleWithSAML\",\"Condition\":{\"StringEquals\":{\"SAML:aud\":\"https://signin.aws.amazon.com/saml\"}}}]}"
+      MaxSessionDuration: 43200
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/ReadOnlyAccess"
+      Description: ""
+      Tags:
+        - Key: "launch_name"
+          Value: "mxr-governance-okta-roles"
+        - Key: "Project"
+          Value: "governance"
+        - Key: "Department"
+          Value: "aws-governance"
+        - Key: "Environment"
+          Value: "prod"
+        - Key: "Governance"
+          Value: "maxar"
+        - Key: "Component"
+          Value: "governance-roles"
+        - Key: "version"
+          Value: "v3"
+        - Key: "ServiceCatalogPuppet:Actor"
+          Value: "Generated"
+        - Key: "Contact"
+          Value: "aws-governance@maxar.com"
+
+  IAMRole26:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/governance/"
+      RoleName: "SecurityLogForwarderRole"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"events.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      Description: ""
+      Tags:
+        - Key: "launch_name"
+          Value: "mxr-governance-cloudtrail-log-security-rules"
+        - Key: "Project"
+          Value: "cloudtrail"
+        - Key: "Department"
+          Value: "aws-governance"
+        - Key: "ServiceUser"
+          Value: "true"
+        - Key: "Environment"
+          Value: "prod"
+        - Key: "Component"
+          Value: "cloudtrail-log-security-rules"
+        - Key: "version"
+          Value: "v1"
+        - Key: "ServiceCatalogPuppet:Actor"
+          Value: "Generated"
+        - Key: "Name"
+          Value: "SecurityLogForwarderRole"
+        - Key: "Contact"
+          Value: "aws-governance@maxar.com"
+
+  IAMRole27:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/servicecatalog-puppet/"
+      RoleName: "PuppetRole"
+      AssumeRolePolicyDocument: !Sub "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::754775651946:root\"},\"Action\":\"sts:AssumeRole\"},{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::${EC2PrefixList.OwnerId}:root\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      PermissionsBoundary: "arn:aws:iam::aws:policy/AdministratorAccess"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AdministratorAccess"
+        - "arn:aws:iam::aws:policy/AWSServiceCatalogEndUserFullAccess"
+      Description: ""
+      Tags:
+        - Key: "ServiceCatalogPuppet:Actor"
+          Value: "Framework"
+        - Key: "Governance"
+          Value: "maxar"
+        - Key: "Project"
+          Value: "governance"
+        - Key: "Component"
+          Value: "PuppetRole"
+        - Key: "Environment"
+          Value: "prod"
+        - Key: "Department"
+          Value: "aws-governance"
+        - Key: "Contact"
+          Value: "aws-governance@maxar.com"
+
+  IAMRole28:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: "SSM-EC2-Role"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ec2.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - !Sub "arn:aws:iam::${EC2PrefixList.OwnerId}:policy/SSM-EC2-Policy"
+      Description: "Allows EC2 instances to use SSM to create sessions between the user and an EC2 instance"
+      Tags:
+        - Key: "Name"
+          Value: "SSM-EC2-Role"
+        - Key: "POC"
+          Value: "Jim"
+
+  IAMRole29:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: "WA-Optimization-Data-Multi-Account-Role"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::437861174546:root\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AWSLambdaExecute"
+      Description: ""
+      Tags:
+        - Key: "Project"
+          Value: "OptimizationCollection"
+        - Key: "POC"
+          Value: "joe.mcmahon@maxar.com"
+
+  IAMRole30:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/governance/"
+      RoleName: "WizScanRole"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::640574606290:root\"},\"Action\":\"sts:AssumeRole\",\"Condition\":{\"StringEquals\":{\"sts:ExternalId\":\"25f4bb17-291e-43b7-95ca-8ae00ace506a\"}}}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/job-function/ViewOnlyAccess"
+      Description: ""
+      Tags:
+        - Key: "launch_name"
+          Value: "mxr-governance-wiz-aws-scanning-role"
+        - Key: "Project"
+          Value: "wiz"
+        - Key: "Department"
+          Value: "aws-governance"
+        - Key: "Environment"
+          Value: "prod"
+        - Key: "Component"
+          Value: "wiz-aws-scanning-role"
+        - Key: "version"
+          Value: "v1"
+        - Key: "ServiceCatalogPuppet:Actor"
+          Value: "Generated"
+        - Key: "Name"
+          Value: "WizScanRole"
+        - Key: "Contact"
+          Value: "aws-governance@maxar.com"
+
+  IAMRole31:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: "terraform-20211118221516365900000001"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"vpcFlowLogsAssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"vpc-flow-logs.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+
+  IAMRole32:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: "SSMInstanceProfile"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ec2.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - !Sub "arn:aws:iam::${EC2PrefixList.OwnerId}:policy/SSM-EC2-Policy"
+        - "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+      Description: "Allows EC2 instances to be accessed with SSM"
+      Tags:
+        - Key: "POC"
+          Value: "Jim"
+        - Key: "Name"
+          Value: "SSMInstanceProfile"
+
+  IAMRole33:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/governance/"
+      RoleName: !Sub "SC-${EC2PrefixList.OwnerId}-pp-tqjopbtnqo3rg-eventRole"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"events.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      Description: ""
+      Tags:
+        - Key: "launch_name"
+          Value: "mxr-governance-access-analyzer-spoke"
+        - Key: "Project"
+          Value: "access-analyzer"
+        - Key: "Department"
+          Value: "aws-governance"
+        - Key: "Environment"
+          Value: "prod"
+        - Key: "Governance"
+          Value: "maxar"
+        - Key: "Component"
+          Value: "access-analyzer-spoke"
+        - Key: "version"
+          Value: "v2"
+        - Key: "ServiceCatalogPuppet:Actor"
+          Value: "Generated"
+        - Key: "Name"
+          Value: !Sub "SC-${EC2PrefixList.OwnerId}-pp-tqjopbtnqo3rg-eventRole"
+        - Key: "Contact"
+          Value: "aws-governance@maxar.com"
+
+  IAMRole34:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: "stacksets-exec-90844a21720b8f50a1b6a266acd00849"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Id\":\"stacksets-exec-90844a21720b8f50a1b6a266acd00849-assume-role-policy\",\"Statement\":[{\"Sid\":\"1\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::398274688464:role/aws-service-role/stacksets.cloudformation.amazonaws.com/AWSServiceRoleForCloudFormationStackSetsOrgAdmin\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AdministratorAccess"
+      Description: "Role created by AWSCloudFormation StackSets"
+      Tags:
+        - Key: "Governance"
+          Value: "maxar"
+        - Key: "Project"
+          Value: "governance"
+        - Key: "Component"
+          Value: "stacksets"
+        - Key: "Environment"
+          Value: "prod"
+        - Key: "Department"
+          Value: "aws-governance"
+        - Key: "Contact"
+          Value: "aws-governance@maxar.com"
+
+  IAMRole35:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/governance/"
+      RoleName: "WizRole"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::197171649850:root\"},\"Action\":\"sts:AssumeRole\",\"Condition\":{\"StringEquals\":{\"sts:ExternalId\":\"25f4bb17-291e-43b7-95ca-8ae00ace506a\"}}}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/job-function/ViewOnlyAccess"
+        - "arn:aws:iam::aws:policy/SecurityAudit"
+      Description: ""
+      Tags:
+        - Key: "launch_name"
+          Value: "mxr-governance-wiz-aws-scanning-role"
+        - Key: "Project"
+          Value: "wiz"
+        - Key: "Department"
+          Value: "aws-governance"
+        - Key: "Environment"
+          Value: "prod"
+        - Key: "Component"
+          Value: "wiz-aws-scanning-role"
+        - Key: "version"
+          Value: "v1"
+        - Key: "ServiceCatalogPuppet:Actor"
+          Value: "Generated"
+        - Key: "Name"
+          Value: "WizRole"
+        - Key: "Contact"
+          Value: "aws-governance@maxar.com"
+
+  IAMRole36:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: "watchServiceReportLogs"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - !Sub "arn:aws:iam::${EC2PrefixList.OwnerId}:policy/deployLambdaToVpc"
+        - "arn:aws:iam::aws:policy/AWSCloudMapDiscoverInstanceAccess"
+        - "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+      Description: "Allows Lambda functions to call AWS services on your behalf."
+      Tags:
+        - Key: "POC"
+          Value: "Mary Shultz"
+
+  IAMRole37:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/governance/"
+      RoleName: "ZestyRole"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::672188301118:root\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - !Sub "arn:aws:iam::${EC2PrefixList.OwnerId}:policy/governance/Zesty${IAMRole25}Policy"
+      Description: "IAM Role for Zesty Application Access"
+      Tags:
+        - Key: "launch_name"
+          Value: "mxr-governance-zesty-aws-scanning-role-spoke"
+        - Key: "Project"
+          Value: "zesty"
+        - Key: "Department"
+          Value: "aws-governance"
+        - Key: "Environment"
+          Value: "prod"
+        - Key: "Component"
+          Value: "zesty-aws-scanning-role"
+        - Key: "version"
+          Value: "v1"
+        - Key: "ServiceCatalogPuppet:Actor"
+          Value: "Generated"
+        - Key: "Name"
+          Value: "ZestyRole"
+        - Key: "Contact"
+          Value: "aws-governance@maxar.com"
+
+  IAMRole38:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/governance/"
+      RoleName: !Sub "${IAMRole39}-${IAMRole25}"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::117106523360:root\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AWSSupportAccess"
+        - "arn:aws:iam::aws:policy/job-function/ViewOnlyAccess"
+        - "arn:aws:iam::aws:policy/SecurityAudit"
+      Description: ""
+      Tags:
+        - Key: "launch_name"
+          Value: "mxr-governance-roles"
+        - Key: "Project"
+          Value: "governance"
+        - Key: "Department"
+          Value: "aws-governance"
+        - Key: "Environment"
+          Value: "prod"
+        - Key: "Governance"
+          Value: "maxar"
+        - Key: "Component"
+          Value: "governance-roles"
+        - Key: "version"
+          Value: "v4"
+        - Key: "ServiceCatalogPuppet:Actor"
+          Value: "Generated"
+        - Key: "Contact"
+          Value: "aws-governance@maxar.com"
+
+  IAMRole39:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/governance/"
+      RoleName: "xaccount-Governance"
+      AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::117106523360:root\"},\"Action\":\"sts:AssumeRole\"}]}"
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AWSSupportAccess"
+        - "arn:aws:iam::aws:policy/job-function/ViewOnlyAccess"
+        - "arn:aws:iam::aws:policy/SecurityAudit"
+      Description: ""
+      Tags:
+        - Key: "launch_name"
+          Value: "mxr-governance-roles"
+        - Key: "Project"
+          Value: "governance"
+        - Key: "Department"
+          Value: "aws-governance"
+        - Key: "Environment"
+          Value: "prod"
+        - Key: "Governance"
+          Value: "maxar"
+        - Key: "Component"
+          Value: "governance-roles"
+        - Key: "version"
+          Value: "v4"
+        - Key: "ServiceCatalogPuppet:Actor"
+          Value: "Generated"
+        - Key: "Contact"
+          Value: "aws-governance@maxar.com"
+
+  IAMServiceLinkedRole:
+    Type: "AWS::IAM::ServiceLinkedRole"
+    Properties:
+      AWSServiceName: "ssm.amazonaws.com"
+      Description: "Provides access to AWS Resources managed or used by Amazon SSM."
+
+  IAMServiceLinkedRole2:
+    Type: "AWS::IAM::ServiceLinkedRole"
+    Properties:
+      AWSServiceName: "autoscaling.amazonaws.com"
+      Description: "Default Service-Linked Role enables access to AWS Services and Resources used or managed by Auto Scaling"
+
+  IAMServiceLinkedRole3:
+    Type: "AWS::IAM::ServiceLinkedRole"
+    Properties:
+      AWSServiceName: "license-manager.amazonaws.com"
+
+  IAMServiceLinkedRole4:
+    Type: "AWS::IAM::ServiceLinkedRole"
+    Properties:
+      AWSServiceName: "ecs.application-autoscaling.amazonaws.com"
+
+  IAMServiceLinkedRole5:
+    Type: "AWS::IAM::ServiceLinkedRole"
+    Properties:
+      AWSServiceName: "member.org.stacksets.cloudformation.amazonaws.com"
+      Description: "Service linked role for CloudFormation StackSets (Organization Member)"
+
+  IAMServiceLinkedRole6:
+    Type: "AWS::IAM::ServiceLinkedRole"
+    Properties:
+      AWSServiceName: "config.amazonaws.com"
+
+  IAMServiceLinkedRole7:
+    Type: "AWS::IAM::ServiceLinkedRole"
+    Properties:
+      AWSServiceName: "access-analyzer.amazonaws.com"
+
+  IAMServiceLinkedRole8:
+    Type: "AWS::IAM::ServiceLinkedRole"
+    Properties:
+      AWSServiceName: "ecs.amazonaws.com"
+      Description: "Role to enable Amazon ECS to manage your cluster."
+
+  IAMServiceLinkedRole9:
+    Type: "AWS::IAM::ServiceLinkedRole"
+    Properties:
+      AWSServiceName: "config-multiaccountsetup.amazonaws.com"
+
+  IAMServiceLinkedRole10:
+    Type: "AWS::IAM::ServiceLinkedRole"
+    Properties:
+      AWSServiceName: "elasticloadbalancing.amazonaws.com"
+      Description: "Allows ELB to call AWS services on your behalf."
+
+  IAMServiceLinkedRole11:
+    Type: "AWS::IAM::ServiceLinkedRole"
+    Properties:
+      AWSServiceName: "fms.amazonaws.com"
+
+  IAMServiceLinkedRole12:
+    Type: "AWS::IAM::ServiceLinkedRole"
+    Properties:
+      AWSServiceName: "globalaccelerator.amazonaws.com"
+      Description: "Allows Global Accelerator to call AWS services on customer's behalf"
+
+  IAMServiceLinkedRole13:
+    Type: "AWS::IAM::ServiceLinkedRole"
+    Properties:
+      AWSServiceName: "license-management.marketplace.amazonaws.com"
+
+  IAMServiceLinkedRole14:
+    Type: "AWS::IAM::ServiceLinkedRole"
+    Properties:
+      AWSServiceName: "organizations.amazonaws.com"
+      Description: !Sub "Service-linked role used by AWS ${IAMPolicy6} to enable integration of other AWS services with ${IAMPolicy6}."
+
+  IAMServiceLinkedRole15:
+    Type: "AWS::IAM::ServiceLinkedRole"
+    Properties:
+      AWSServiceName: "sso.amazonaws.com"
+      Description: "Service-linked role used by AWS SSO to manage AWS resources, including IAM roles, policies and SAML IdP on your behalf."
+
+  IAMServiceLinkedRole16:
+    Type: "AWS::IAM::ServiceLinkedRole"
+    Properties:
+      AWSServiceName: "rds.amazonaws.com"
+      Description: "Allows Amazon RDS to manage AWS resources on your behalf"
+
+  IAMManagedPolicy:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      ManagedPolicyName: "custom-logs"
+      Path: "/"
+      PolicyDocument: |
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+                "logs:DescribeLogStreams"
+            ],
+              "Resource": [
+                "arn:aws:logs:*:*:*"
+            ]
+          }
+         ]
+        }
+
+  IAMManagedPolicy2:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      ManagedPolicyName: "Github_ansible_policy"
+      Path: "/"
+      PolicyDocument: !Sub |
+        {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Sid": "VisualEditor0",
+                    "Effect": "Allow",
+                    "Action": "ec2:CreateTags",
+                    "Resource": "*",
+                    "Condition": {
+                        "StringEquals": {
+                            "ec2:CreateAction": "RunInstances"
+                        }
+                    }
+                },
+                {
+                    "Sid": "VisualEditor1",
+                    "Effect": "Allow",
+                    "Action": "iam:PassRole",
+                    "Resource": "*",
+                    "Condition": {
+                        "StringLike": {
+                            "iam:PassedToService": "ecs-tasks.amazonaws.com"
+                        }
+                    }
+                },
+                {
+        
+                    "Sid": "VisualEditor5",
+                    "Effect": "Allow",
+                    "Action": "iam:PassRole",
+                    "Resource": "arn:aws:iam::${EC2PrefixList.OwnerId}:role/${IAMRole14}"
+                },
+                {
+                    "Sid": "VisualEditor2",
+                    "Effect": "Allow",
+                    "Action": "iam:PassRole",
+                    "Resource": "arn:aws:iam::*:role/ecsInstanceRole*",
+                    "Condition": {
+                        "StringLike": {
+                            "iam:PassedToService": [
+                                "ec2.amazonaws.com",
+                                "ec2.amazonaws.com.cn"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "Sid": "VisualEditor3",
+                    "Effect": "Allow",
+                    "Action": [
+                        "ec2:AuthorizeSecurityGroupIngress",
+                        "ec2:DeleteSubnet",
+                        "ec2:RunScheduledInstances",
+                        "events:PutRule",
+                        "ec2:RequestSpotFleet",
+                        "ec2:ModifySubnetAttribute",
+                        "events:ListRuleNamesByTarget",
+                        "ec2:StartInstances",
+                        "iam:ListAttachedRolePolicies",
+                        "ec2:ModifyVpcAttribute",
+                        "events:RemoveTargets",
+                        "events:ListTargetsByRule",
+                        "events:DescribeRule",
+                        "ec2:TerminateInstances",
+                        "ec2:CreateTags",
+                        "ec2:RunInstances",
+                        "iam:ListRoles",
+                        "ec2:DetachInternetGateway",
+                        "ec2:DisassociateRouteTable",
+                        "iam:ListInstanceProfiles",
+                        "ec2:CreateVolume",
+                        "events:DeleteRule",
+                        "events:PutTargets",
+                        "ec2:Describe*",
+                        "ecs:*"
+                    ],
+                    "Resource": "*"
+                },
+                {
+                    "Sid": "VisualEditor4",
+                    "Effect": "Allow",
+                    "Action": [
+                        "ssm:GetParametersByPath",
+                        "ssm:GetParameters",
+                        "ssm:GetParameter"
+                    ],
+                    "Resource": "arn:aws:ssm:*:*:parameter/aws/service/ecs*"
+                }
+            ]
+        }
+
+  IAMManagedPolicy3:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      ManagedPolicyName: !Sub "SC-${EC2PrefixList.OwnerId}-pp-tzrqxdqk2inqu-MFAPolicy-1XYD9FD6ZHHM6"
+      Path: "/"
+      PolicyDocument: !Sub "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"iam:ListAccountAliases\",\"iam:ListUsers\"],\"Resource\":[\"arn:aws:iam::${EC2PrefixList.OwnerId}:user/*\"],\"Effect\":\"Allow\",\"Sid\":\"AllowAllUsersToListAccounts\"},{\"Action\":[\"iam:ChangePassword\",\"iam:CreateAccessKey\",\"iam:CreateLoginProfile\",\"iam:DeleteAccessKey\",\"iam:DeleteLoginProfile\",\"iam:GetLoginProfile\",\"iam:GetUser\",\"iam:ListAccessKeys\",\"iam:UpdateAccessKey\",\"iam:UpdateLoginProfile\",\"iam:ListSigningCertificates\",\"iam:DeleteSigningCertificate\",\"iam:UpdateSigningCertificate\",\"iam:UploadSigningCertificate\",\"iam:ListSSHPublicKeys\",\"iam:GetSSHPublicKey\",\"iam:DeleteSSHPublicKey\",\"iam:UpdateSSHPublicKey\",\"iam:UploadSSHPublicKey\"],\"Resource\":[\"arn:aws:iam::${EC2PrefixList.OwnerId}:user/${aws:username}\"],\"Effect\":\"Allow\",\"Sid\":\"AllowIndividualUserToSeeAndManageOnlyTheirOwnAccountInformation\"},{\"Action\":[\"iam:ListVirtualMFADevices\",\"iam:ListMFADevices\"],\"Resource\":[\"arn:aws:iam::${EC2PrefixList.OwnerId}:mfa/*\",\"arn:aws:iam::${EC2PrefixList.OwnerId}:user/${aws:username}\"],\"Effect\":\"Allow\",\"Sid\":\"AllowIndividualUserToListTheirMFA\"},{\"Action\":[\"sts:GetSessionToken\"],\"Resource\":[\"arn:aws:iam::${EC2PrefixList.OwnerId}:user/${aws:username}\"],\"Effect\":\"Allow\",\"Sid\":\"AllowUsersToAssumeRoles\"},{\"Action\":[\"iam:CreateVirtualMFADevice\",\"iam:DeactivateMFADevice\",\"iam:DeleteVirtualMFADevice\",\"iam:EnableMFADevice\",\"iam:ResyncMFADevice\",\"iam:RequestSmsMfaRegistration\",\"iam:FinalizeSmsMfaRegistration\"],\"Resource\":[\"arn:aws:iam::${EC2PrefixList.OwnerId}:mfa/${aws:username}\",\"arn:aws:iam::${EC2PrefixList.OwnerId}:user/${aws:username}\"],\"Effect\":\"Allow\",\"Sid\":\"AllowIndividualUserToManageTheirMFA\"},{\"Condition\":{\"NumericGreaterThanIfExists\":{\"aws:MultiFactorAuthAge\":\"43200\"}},\"Resource\":[\"*\"],\"Effect\":\"Deny\",\"NotAction\":[\"iam:*\"],\"Sid\":\"DoNotAllowAnythingOtherThanAboveUnlessMFAd\"}]}"
+
+  IAMManagedPolicy4:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      ManagedPolicyName: "github_action_policy"
+      Path: "/"
+      PolicyDocument: !Sub |
+        {
+        	"Version": "2012-10-17",
+        	"Statement": [
+        		{
+        			"Sid": "VisualEditor0",
+        			"Effect": "Allow",
+        			"Action": [
+        				"ecs:UpdateService",
+        				"iam:PassRole",
+        				"ecr:CompleteLayerUpload",
+        				"ecs:DescribeServices",
+        				"ecr:UploadLayerPart",
+        				"ecr:InitiateLayerUpload",
+        				"ecr:BatchCheckLayerAvailability",
+        				"ecr:PutImage"
+        			],
+        			"Resource": [
+        				"arn:aws:ecs:${AWS::Region}:${EC2PrefixList.OwnerId}:service/${ECSCluster}/${ECSService.Name}",
+        				"arn:aws:ecr:${AWS::Region}:${EC2PrefixList.OwnerId}:repository/${ElasticLoadBalancingV2TargetGroup5.TargetGroupName}",
+        				"arn:aws:iam::${EC2PrefixList.OwnerId}:role/${IAMRole12}",
+        				"arn:aws:iam::${EC2PrefixList.OwnerId}:role/ECS-Task-Role"
+        			]
+        		},
+        		{
+        			"Sid": "VisualEditor1",
+        			"Effect": "Allow",
+        			"Action": [
+        				"ecs:UpdateService",
+        				"iam:PassRole",
+        				"ecr:CompleteLayerUpload",
+        				"ecs:DescribeServices",
+        				"ecr:UploadLayerPart",
+        				"ecr:InitiateLayerUpload",
+        				"ecr:BatchCheckLayerAvailability",
+        				"ecr:PutImage"
+        			],
+        			"Resource": [
+        				"arn:aws:ecs:${AWS::Region}:${EC2PrefixList.OwnerId}:service/whiteboard-cluster/Whiteboard-service",
+        				"arn:aws:ecs:${AWS::Region}:${EC2PrefixList.OwnerId}:service/factrac-cluster/${ECSService9.Name}",
+        				"arn:aws:ecs:${AWS::Region}:${EC2PrefixList.OwnerId}:service/factrac-cluster/${ECSService8.Name}",
+        				"arn:aws:ecr:${AWS::Region}:${EC2PrefixList.OwnerId}:repository/whiteboard_api",
+        				"arn:aws:ecr:${AWS::Region}:${EC2PrefixList.OwnerId}:repository/factrac_api",
+        				"arn:aws:ecr:${AWS::Region}:${EC2PrefixList.OwnerId}:repository/factrac_ui",
+        				"arn:aws:iam::${AWS::AccountId}:role/${IAMRole12}",
+        				"arn:aws:iam::${AWS::AccountId}:role/ECS-Task-Role",
+        				"arn:aws:iam::${AWS::AccountId}:role/${ElasticLoadBalancingV2TargetGroup5.TargetGroupName}-ecs-task-role"
+        			]
+        		},
+        		{
+        			"Sid": "VisualEditor2",
+        			"Effect": "Allow",
+        			"Action": [
+        				"s3:ListAccessPointsForObjectLambda",
+        				"s3:GetAccessPoint",
+        				"s3:PutAccountPublicAccessBlock",
+        				"s3:ListAccessPoints",
+        				"s3:ListJobs",
+        				"s3:PutStorageLensConfiguration",
+        				"ecr:GetAuthorizationToken",
+        				"s3:ListMultiRegionAccessPoints",
+        				"s3:ListStorageLensConfigurations",
+        				"s3:GetAccountPublicAccessBlock",
+        				"s3:ListAllMyBuckets",
+        				"s3:PutAccessPointPublicAccessBlock",
+        				"ecs:RegisterTaskDefinition",
+        				"s3:CreateJob"
+        			],
+        			"Resource": "*"
+        		},
+        		{
+        			"Sid": "VisualEditor3",
+        			"Effect": "Allow",
+        			"Action": "s3:*",
+        			"Resource": [
+        				"arn:aws:s3::${AWS::AccountId}:accesspoint/*",
+        				"arn:aws:s3:*:${AWS::AccountId}:accesspoint/*",
+        				"arn:aws:s3:us-west-2:${AWS::AccountId}:async-request/mrap/*/*",
+        				"arn:aws:s3:*:${AWS::AccountId}:storage-lens/*",
+        				"arn:aws:s3:::${S3Bucket16}",
+        				"arn:aws:s3:::${S3Bucket11}",
+        				"arn:aws:s3:::*/*",
+        				"arn:aws:s3-object-lambda:*:${AWS::AccountId}:accesspoint/*",
+        				"arn:aws:s3:*:${AWS::AccountId}:job/*"
+        			]
+        		},
+        		{
+        			"Effect": "Allow",
+        			"Action": [
+        				"cloudfront:CreateInvalidation",
+        				"cloudfront:GetInvalidation",
+        				"cloudfront:ListInvalidations"
+        			],
+        			"Resource": "*"
+        		}
+        	]
+        }
+
+  IAMManagedPolicy5:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      ManagedPolicyName: "mxr-ssm-managed-instance-policy"
+      Path: "/governance/"
+      PolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ssm:DescribeAssociation\",\"ssm:GetDeployablePatchSnapshotForInstance\",\"ssm:GetDocument\",\"ssm:DescribeDocument\",\"ssm:GetManifest\",\"ssm:GetParameter\",\"ssm:GetParameters\",\"ssm:ListAssociations\",\"ssm:ListInstanceAssociations\",\"ssm:PutInventory\",\"ssm:PutComplianceItems\",\"ssm:PutConfigurePackageResult\",\"ssm:UpdateAssociationStatus\",\"ssm:UpdateInstanceAssociationStatus\",\"ssm:UpdateInstanceInformation\"],\"Resource\":\"*\",\"Effect\":\"Allow\"},{\"Action\":[\"ssmmessages:CreateControlChannel\",\"ssmmessages:CreateDataChannel\",\"ssmmessages:OpenControlChannel\",\"ssmmessages:OpenDataChannel\"],\"Resource\":\"*\",\"Effect\":\"Allow\"},{\"Action\":[\"ec2messages:AcknowledgeMessage\",\"ec2messages:DeleteMessage\",\"ec2messages:FailMessage\",\"ec2messages:GetEndpoint\",\"ec2messages:GetMessages\",\"ec2messages:SendReply\"],\"Resource\":\"*\",\"Effect\":\"Allow\"}]}"
+
+  IAMManagedPolicy6:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      ManagedPolicyName: "ECR_get_token"
+      Path: "/"
+      PolicyDocument: |
+        {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Sid": "GetAuthorizationToken",
+                    "Effect": "Allow",
+                    "Action": [
+                        "ecr:GetAuthorizationToken",
+                        "ecr:BatchCheckLayerAvailability",
+                        "ecr:CompleteLayerUpload",
+                        "ecr:InitiateLayerUpload",
+                        "ecr:PutImage",
+                        "ecr:UploadLayerPart"
+                    ],
+                    "Resource": "*"
+                }
+            ]
+        }
+
+  IAMManagedPolicy7:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      ManagedPolicyName: "Fallout-Secret-Policy"
+      Path: "/"
+      PolicyDocument: !Sub |
+        {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Sid": "VisualEditor0",
+                    "Effect": "Allow",
+                    "Action": [
+                        "secretsmanager:GetSecretValue",
+                        "secretsmanager:DescribeSecret"
+                    ],
+                    "Resource": "arn:aws:secretsmanager:${AWS::Region}:${EC2PrefixList.OwnerId}:secret:${RDSDBInstance}-dev-pw-AZrdeD"
+                },
+                {
+                    "Sid": "VisualEditor1",
+                    "Effect": "Allow",
+                    "Action": "secretsmanager:ListSecrets",
+                    "Resource": "*"
+                }
+            ]
+        }
+
+  IAMManagedPolicy8:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      ManagedPolicyName: !Sub "Zesty${IAMRole25}Policy"
+      Path: "/governance/"
+      PolicyDocument: !Sub "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ec2:List*\",\"tag:GetResources\",\"tag:GetTagKeys\",\"tag:GetTagValues\",\"elasticloadbalancing:Describe*\",\"ec2:Describe*\"],\"Resource\":[\"*\"],\"Effect\":\"Allow\",\"Sid\":\"ZestyEC2Access\"},{\"Action\":[\"autoscaling:Describe*\"],\"Resource\":[\"*\"],\"Effect\":\"Allow\",\"Sid\":\"ZestyEC2AutoScalingAccess\"},{\"Action\":[\"organizations:List*\",\"organizations:Describe*\"],\"Resource\":[\"*\"],\"Effect\":\"Allow\",\"Sid\":\"Zesty${IAMPolicy6}Access\"},{\"Action\":[\"cloudwatch:List*\",\"cloudwatch:Describe*\",\"cloudwatch:GetMetricStatistics\"],\"Resource\":[\"*\"],\"Effect\":\"Allow\",\"Sid\":\"ZestyCloudWatchAccess\"},{\"Action\":[\"savingsplans:List*\",\"savingsplans:Describe*\"],\"Resource\":[\"*\"],\"Effect\":\"Allow\",\"Sid\":\"ZestySavingsPlansAccess\"},{\"Action\":[\"ce:List*\",\"ce:Describe*\",\"ce:Get*\"],\"Resource\":[\"*\"],\"Effect\":\"Allow\",\"Sid\":\"ZestyCostExplorerAccess\"},{\"Action\":[\"cur:DescribeReportDefinitions\"],\"Resource\":[\"*\"],\"Effect\":\"Allow\",\"Sid\":\"ZestyCostandUsageReportsAccess\"},{\"Action\":[\"rds:List*\",\"rds:ListTagsForResource\",\"rds:Describe*\"],\"Resource\":[\"*\"],\"Effect\":\"Allow\",\"Sid\":\"ZestyRDSAccess\"},{\"Action\":[\"elasticache:List*\",\"elasticache:Describe*\"],\"Resource\":[\"*\"],\"Effect\":\"Allow\",\"Sid\":\"ZestyElastiCacheAccess\"},{\"Action\":[\"redshift:Describe*\"],\"Resource\":[\"*\"],\"Effect\":\"Allow\",\"Sid\":\"ZestyRedshiftAccess\"},{\"Action\":[\"es:List*\",\"es:Describe*\",\"es:GetCompatibleElasticsearchVersions\"],\"Resource\":[\"*\"],\"Effect\":\"Allow\",\"Sid\":\"ZestyElasticsearchAccess\"},{\"Action\":[\"s3:HeadBucket\",\"s3:ListAllMyBuckets\",\"s3:ListBucket\",\"s3:GetBucketAcl\",\"s3:GetBucketCORS\",\"s3:GetBucketLocation\",\"s3:GetBucketLogging\",\"s3:GetBucketPolicy\",\"s3:GetBucketRequestPayment\",\"s3:GetBucketTagging\",\"s3:GetBucketVersioning\",\"s3:GetBucketWebsite\",\"s3:GetEncryptionConfiguration\",\"s3:GetLifecycleConfiguration\",\"s3:GetMetricsConfiguration\",\"s3:GetReplicationConfiguration\"],\"Resource\":[\"*\"],\"Effect\":\"Allow\",\"Sid\":\"ZestyS3Access\"}]}"
+
+  IAMManagedPolicy9:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      ManagedPolicyName: "SSM-EC2-Policy"
+      Path: "/"
+      PolicyDocument: |
+        {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Action": [
+                        "ssm:UpdateInstanceInformation",
+                        "ssmmessages:CreateControlChannel",
+                        "ssmmessages:CreateDataChannel",
+                        "ssmmessages:OpenControlChannel",
+                        "ssmmessages:OpenDataChannel"
+                    ],
+                    "Resource": "*"
+                },
+                {
+                    "Effect": "Allow",
+                    "Action": [
+                        "s3:GetEncryptionConfiguration"
+                    ],
+                    "Resource": "*"
+                }
+            ]
+        }
+
+  IAMManagedPolicy10:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      ManagedPolicyName: "deployLambdaToVpc"
+      Path: "/"
+      PolicyDocument: |
+        {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Action": [
+                        "ec2:DescribeNetworkInterfaces",
+                        "ec2:CreateNetworkInterface",
+                        "ec2:DeleteNetworkInterface",
+                        "ec2:DescribeInstances",
+                        "ec2:AttachNetworkInterface",
+                        "cloudwatch:putMetricData"
+                    ],
+                    "Resource": "*"
+                }
+            ]
+        }
+
+  IAMManagedPolicy11:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      ManagedPolicyName: !Sub "${ElasticLoadBalancingV2TargetGroup5.TargetGroupName}-task-get-s3-policy"
+      Path: "/"
+      PolicyDocument: !Sub |
+        {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Sid": "VisualEditor0",
+                    "Effect": "Allow",
+                    "Action": "s3:GetObject",
+                    "Resource": "arn:aws:s3:::${S3Bucket9}/VIIRS/image_chips/*"
+                }
+            ]
+        }
+
+  IAMPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: !Sub "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"sts:AssumeRole\"],\"Resource\":[\"arn:*:iam::*:role/${IAMRole}\"],\"Effect\":\"Allow\"}]}"
+      Roles:
+        - !Ref IAMRole3
+      PolicyName: !Sub "AssumeRole-${IAMRole}"
+
+  IAMPolicy2:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"iam:ListRoles\",\"config:DescribeConfigurationRecorders\",\"compute-optimizer:GetEnrollmentStatus\",\"support:DescribeTrustedAdvisorChecks\"],\"Resource\":\"*\",\"Effect\":\"Allow\"},{\"Action\":[\"ssm:UpdateServiceSetting\",\"ssm:GetServiceSetting\"],\"Resource\":[\"arn:aws:ssm:*:*:servicesetting/ssm/opsitem/ssm-patchmanager\",\"arn:aws:ssm:*:*:servicesetting/ssm/opsitem/EC2\",\"arn:aws:ssm:*:*:servicesetting/ssm/opsdata/ExplorerOnboarded\",\"arn:aws:ssm:*:*:servicesetting/ssm/opsdata/Association\",\"arn:aws:ssm:*:*:servicesetting/ssm/opsdata/ComputeOptimizer\",\"arn:aws:ssm:*:*:servicesetting/ssm/opsdata/ConfigCompliance\",\"arn:aws:ssm:*:*:servicesetting/ssm/opsdata/OpsData-TrustedAdvisor\",\"arn:aws:ssm:*:*:servicesetting/ssm/opsdata/SupportCenterCase\"],\"Effect\":\"Allow\"},{\"Condition\":{\"StringEquals\":{\"iam:AWSServiceName\":\"ssm.amazonaws.com\"}},\"Action\":[\"iam:CreateServiceLinkedRole\"],\"Resource\":\"arn:aws:iam::*:role/aws-service-role/ssm.amazonaws.com/AWSServiceRoleForAmazonSSM\",\"Effect\":\"Allow\"}]}"
+      Roles:
+        - !Ref IAMRole5
+      PolicyName: "SSMQuickSetupEnableExplorerInlinePolicy"
+
+  IAMPolicy3:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: !Sub "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ssm:GetAutomationExecution\",\"ec2:DescribeIamInstanceProfileAssociations\",\"ec2:DisassociateIamInstanceProfile\",\"ec2:DescribeInstances\",\"ssm:StartAutomationExecution\",\"iam:GetInstanceProfile\",\"iam:ListInstanceProfilesForRole\"],\"Resource\":\"*\",\"Effect\":\"Allow\"},{\"Condition\":{\"ArnEquals\":{\"iam:PolicyARN\":[\"arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore\",\"arn:aws:iam::aws:policy/AmazonSSMPatchAssociation\"]}},\"Action\":[\"iam:AttachRolePolicy\"],\"Resource\":[\"arn:aws:iam::${EC2PrefixList.OwnerId}:role/${IAMRole2}\"],\"Effect\":\"Allow\"},{\"Action\":[\"iam:AddRoleToInstanceProfile\"],\"Resource\":[\"arn:aws:iam::${EC2PrefixList.OwnerId}:instance-profile/${IAMRole2}\"],\"Effect\":\"Allow\"},{\"Condition\":{\"StringEquals\":{\"ec2:NewInstanceProfile\":\"arn:aws:iam::${EC2PrefixList.OwnerId}:instance-profile/${IAMRole2}\"}},\"Action\":[\"ec2:AssociateIamInstanceProfile\"],\"Resource\":\"*\",\"Effect\":\"Allow\"},{\"Action\":[\"iam:CreateInstanceProfile\"],\"Resource\":[\"arn:aws:iam::${EC2PrefixList.OwnerId}:instance-profile/${IAMRole2}\"],\"Effect\":\"Allow\"},{\"Action\":[\"iam:GetRole\"],\"Resource\":[\"arn:aws:iam::${EC2PrefixList.OwnerId}:role/${IAMRole2}\",\"arn:aws:iam::${EC2PrefixList.OwnerId}:role/${IAMRole5}\"],\"Effect\":\"Allow\"},{\"Condition\":{\"StringEquals\":{\"iam:PassedToService\":[\"ec2.amazonaws.com\"]}},\"Action\":[\"iam:PassRole\"],\"Resource\":[\"arn:aws:iam::${EC2PrefixList.OwnerId}:role/${IAMRole2}\"],\"Effect\":\"Allow\"},{\"Condition\":{\"StringEquals\":{\"iam:PassedToService\":[\"ssm.amazonaws.com\"]}},\"Action\":[\"iam:PassRole\"],\"Resource\":[\"arn:aws:iam::${EC2PrefixList.OwnerId}:role/${IAMRole5}\"],\"Effect\":\"Allow\"},{\"Action\":[\"iam:CreateRole\"],\"Resource\":[\"arn:aws:iam::${EC2PrefixList.OwnerId}:role/${IAMRole2}\"],\"Effect\":\"Allow\"}]}"
+      Roles:
+        - !Ref IAMRole5
+      PolicyName: !Sub "AWS-QuickSetup-SSMHostMgmt-CreateAndAttachRoleInlinePolicy-${AWS::Region}-yoogl"
+
+  IAMPolicy4:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: !Sub "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"logs:CreateLogStream\",\"logs:PutLogEvents\"],\"Resource\":[\"arn:aws:logs:${AWS::Region}:${EC2PrefixList.OwnerId}:log-group:*\"],\"Effect\":\"Allow\",\"Sid\":\"managelogstream\"}]}"
+      Roles:
+        - !Ref IAMRole6
+      PolicyName: "cloudwatch-logs-mgmt"
+
+  IAMPolicy5:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: !Sub "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"events:PutEvents\"],\"Resource\":\"arn:aws:events:${AWS::Region}:754775651946:event-bus/${ECSCluster2}\",\"Effect\":\"Allow\"}]}"
+      Roles:
+        - !Ref IAMRole13
+      PolicyName: "EventBusActions"
+
+  IAMPolicy6:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ec2:DescribeInternetGateways\",\"ec2:DetachInternetGateway\",\"ec2:DeleteInternetGateway\",\"ec2:DescribeSubnets\",\"ec2:DeleteSubnet\",\"ec2:DescribeRouteTables\",\"ec2:DeleteRouteTable\",\"ec2:DescribeNetworkAcls\",\"ec2:DeleteNetworkAcl\",\"ec2:DeleteSecurityGroup\",\"ec2:DeleteVpc\",\"ec2:DescribeRegions\",\"ec2:DescribeAccountAttributes\",\"ec2:DescribeNetworkInterfaces\",\"ec2:DescribeSecurityGroups\",\"ec2:DeleteSecurityGroup\",\"logs:CreateLogGroup\",\"logs:CreateLogStream\",\"logs:PutLogEvents\"],\"Resource\":\"*\",\"Effect\":\"Allow\"}]}"
+      Roles:
+        - !Ref IAMRole7
+      PolicyName: "Organizations"
+
+  IAMPolicy7:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: !Sub "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":\"servicecatalog:AcceptPortfolioShare\",\"Resource\":\"arn:aws:catalog:*:${EC2PrefixList.OwnerId}:portfolio/*\",\"Effect\":\"Allow\"},{\"Action\":\"servicecatalog:AssociatePrincipalWithPortfolio\",\"Resource\":\"arn:aws:catalog:*:${EC2PrefixList.OwnerId}:portfolio/*\",\"Effect\":\"Allow\"},{\"Action\":\"iam:GetRole\",\"Resource\":\"arn:aws:iam::${EC2PrefixList.OwnerId}:role/servicecatalog-puppet/${IAMRole27}\",\"Effect\":\"Allow\"},{\"Action\":\"servicecatalog:SearchProductsAsAdmin\",\"Resource\":\"arn:aws:servicecatalog:*:${EC2PrefixList.OwnerId}:*/*\",\"Effect\":\"Allow\"},{\"Action\":\"servicecatalog:SearchProductsAsAdmin\",\"Resource\":\"arn:aws:catalog:*:${EC2PrefixList.OwnerId}:portfolio/*\",\"Effect\":\"Allow\"},{\"Action\":\"servicecatalog:ListAcceptedPortfolioShares\",\"Resource\":\"arn:aws:servicecatalog:*:${EC2PrefixList.OwnerId}:*/*\",\"Effect\":\"Allow\"},{\"Action\":\"servicecatalog:ListProvisioningArtifacts\",\"Resource\":\"arn:aws:catalog:*:${EC2PrefixList.OwnerId}:product/*\",\"Effect\":\"Allow\"},{\"Action\":\"servicecatalog:ListPortfolios\",\"Resource\":\"arn:aws:catalog:*:${EC2PrefixList.OwnerId}:product/*\",\"Effect\":\"Allow\"},{\"Action\":\"sns:Publish\",\"Resource\":\"arn:aws:sns:*:754775651946:servicecatalog-puppet-cloudformation-regional-events\",\"Effect\":\"Allow\"}]}"
+      Roles:
+        - !Ref IAMRole27
+      PolicyName: "acceptShares"
+
+  IAMPolicy8:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: !Sub "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"events:PutEvents\"],\"Resource\":\"arn:aws:events:${AWS::Region}:370438565036:event-bus/SecurityEventBusRouteToFirehose\",\"Effect\":\"Allow\"}]}"
+      Roles:
+        - !Ref IAMRole26
+      PolicyName: "SecurityLogForwarderPolicy"
+
+  IAMPolicy9:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: |
+        {
+        	"Version": "2012-10-17",
+        	"Statement": [
+        		{
+        			"Sid": "Statement1",
+        			"Effect": "Allow",
+        			"Action": "ecs:DescribeTasks",
+        			"Resource": "*"
+        		}
+        	]
+        }
+      Roles:
+        - !Ref IAMRole14
+      PolicyName: "AmazonEC2ContainerServiceDescribeInstances"
+
+  IAMPolicy10:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":\"s3:GetObject\",\"Resource\":[\"arn:aws:s3:::cf-templates-*\",\"arn:aws:s3:::cf-templates-*/*\"],\"Effect\":\"Allow\"}]}"
+      Roles:
+        - !Ref IAMRole27
+      PolicyName: "AllowAccessToSCTemplates"
+
+  IAMPolicy11:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"budgets:ViewBudget\",\"budgets:Describe*\"],\"Resource\":\"arn:aws:budgets::*:budget/*\",\"Effect\":\"Allow\"}]}"
+      Roles:
+        - !Ref IAMRole29
+      PolicyName: !Sub "Budgets${IAMRole25}Policy"
+
+  IAMPolicy12:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"imagebuilder:ListImages\",\"imagebuilder:GetImage\"],\"Resource\":\"*\",\"Effect\":\"Allow\"}]}"
+      Roles:
+        - !Ref IAMRole29
+      PolicyName: "ami"
+
+  IAMPolicy13:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: !Sub "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ecs:ListAttributes\",\"ecs:DescribeTaskSets\",\"ecs:DescribeTaskDefinition\",\"ecs:DescribeClusters\",\"ecs:ListServices\",\"ecs:ListAccountSettings\",\"ecs:DescribeCapacityProviders\",\"ecs:ListTagsForResource\",\"ecs:ListTasks\",\"ecs:ListTaskDefinitionF${IAMPolicy12}lies\",\"ecs:DescribeServices\",\"ecs:ListContainerInstances\",\"ecs:DescribeContainerInstances\",\"ecs:DescribeTasks\",\"ecs:ListTaskDefinitions\",\"ecs:ListClusters\"],\"Resource\":\"*\",\"Effect\":\"Allow\"}]}"
+      Roles:
+        - !Ref IAMRole29
+      PolicyName: "ECSChargebackPolicy"
+
+  IAMPolicy14:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ec2:DescribeImages\",\"ec2:DescribeVolumeStatus\",\"ec2:DescribeVolumes\",\"ec2:DescribeSnapshots\",\"ec2:DescribeSnapshotAttribute\"],\"Resource\":\"*\",\"Effect\":\"Allow\"}]}"
+      Roles:
+        - !Ref IAMRole29
+      PolicyName: "InventoryCollectorPolicy"
+
+  IAMPolicy15:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"rds:DescribeDBProxyTargetGroups\",\"rds:DescribeDBInstanceAutomatedBackups\",\"rds:DescribeDBEngineVersions\",\"rds:DescribeDBSubnetGroups\",\"rds:DescribeGlobalClusters\",\"rds:DescribeExportTasks\",\"rds:DescribePendingMaintenanceActions\",\"rds:DescribeEngineDefaultParameters\",\"rds:DescribeDBParameterGroups\",\"rds:DescribeDBClusterBacktracks\",\"rds:DescribeCustomAvailabilityZones\",\"rds:DescribeReservedDBInstancesOfferings\",\"rds:DescribeDBProxyTargets\",\"rds:DownloadDBLogFilePortion\",\"rds:DescribeDBInstances\",\"rds:DescribeSourceRegions\",\"rds:DescribeEngineDefaultClusterParameters\",\"rds:DescribeInstallationMedia\",\"rds:DescribeDBProxies\",\"rds:DescribeDBParameters\",\"rds:DescribeEventCategories\",\"rds:DescribeDBProxyEndpoints\",\"rds:DescribeEvents\",\"rds:DescribeDBClusterSnapshotAttributes\",\"rds:DescribeDBClusterParameters\",\"rds:DescribeEventSubscriptions\",\"rds:DescribeDBSnapshots\",\"rds:DescribeDBLogFiles\",\"rds:DescribeDBSecurityGroups\",\"rds:DescribeDBSnapshotAttributes\",\"rds:DescribeReservedDBInstances\",\"rds:ListTagsForResource\",\"rds:DescribeValidDBInstanceModifications\",\"rds:DescribeDBClusterSnapshots\",\"rds:DescribeOrderableDBInstanceOptions\",\"rds:DescribeOptionGroupOptions\",\"rds:DescribeDBClusterEndpoints\",\"rds:DescribeCertificates\",\"rds:DescribeDBClusters\",\"rds:DescribeAccountAttributes\",\"rds:DescribeOptionGroups\",\"rds:DescribeDBClusterParameterGroups\"],\"Resource\":\"*\",\"Effect\":\"Allow\"},{\"Action\":[\"ec2:DescribeRegions\",\"cloudwatch:GetMetricStatistics\"],\"Resource\":\"*\",\"Effect\":\"Allow\"}]}"
+      Roles:
+        - !Ref IAMRole29
+      PolicyName: "RDSUtilizationPolicy"
+
+  IAMPolicy16:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"trustedadvisor:Describe*\",\"trustedadvisor:List*\",\"trustedadvisor:GenerateReport\",\"trustedadvisor:IncludeCheckItems\",\"trustedadvisor:ExcludeCheckItems\",\"trustedadvisor:RefreshCheck\",\"support:DescribeTrustedAdvisorChecks\",\"support:DescribeTrustedAdvisorCheckResult\"],\"Resource\":\"*\",\"Effect\":\"Allow\"}]}"
+      Roles:
+        - !Ref IAMRole29
+      PolicyName: "TAPolicy"
+
+  IAMPolicy17:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ec2:DescribeTransitGatewayAttachments\",\"cloudwatch:Describe*\",\"cloudwatch:Get*\",\"cloudwatch:List*\"],\"Resource\":\"*\",\"Effect\":\"Allow\"}]}"
+      Roles:
+        - !Ref IAMRole29
+      PolicyName: "TransitGatewayPolicy"
+
+  IAMPolicy18:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ce:GetRightsizingRecommendation\"],\"Resource\":\"*\",\"Effect\":\"Allow\"}]}"
+      Roles:
+        - !Ref IAMRole29
+      PolicyName: !Sub "Rightsize${IAMRole25}Policy"
+
+  IAMPolicy19:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: !Sub |
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "publishToCloudWatchLogs",
+              "Effect": "Allow",
+              "Action": [
+                "logs:PutLogEvents",
+                "logs:DescribeLogStreams",
+                "logs:DescribeLogGroups",
+                "logs:CreateLogStream",
+                "logs:CreateLogGroup"
+              ],
+              "Resource": "arn:aws:logs:${AWS::Region}:${EC2PrefixList.OwnerId}:log-group:dev-vpc-flow-logs:*"
+            }
+          ]
+        }
+      Roles:
+        - !Ref IAMRole31
+      PolicyName: "PublishFlowLogsPolicy"
+
+  IAMPolicy20:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ecr:BatchGetImage\",\"ecr:DescribeImages\",\"ecr:GetAuthorizationToken\",\"ecr:GetDownloadUrlForLayer\",\"ecr:ListTagsForResource\",\"ecr:GetRegistryPolicy\",\"ecr-public:DescribeImages\",\"ecr-public:ListTagsForResource\",\"ecr-public:GetAuthorizationToken\"],\"Resource\":\"*\",\"Effect\":\"Allow\"},{\"Action\":[\"ec2:CopySnapshot\",\"ec2:CreateSnapshot\",\"kms:CreateKey\",\"kms:DescribeKey\",\"ec2:GetEbsEncryptionByDefault\",\"ec2:DescribeSnapshots\"],\"Resource\":\"*\",\"Effect\":\"Allow\"},{\"Action\":[\"ec2:CreateTags\"],\"Resource\":\"arn:aws:ec2:*::snapshot/*\",\"Effect\":\"Allow\"},{\"Action\":\"kms:CreateAlias\",\"Resource\":[\"arn:aws:kms:*:*:alias/wizKey\",\"arn:aws:kms:*:*:key/*\"],\"Effect\":\"Allow\"},{\"Condition\":{\"StringLike\":{\"kms:ViaService\":\"ec2.*.amazonaws.com\"}},\"Action\":[\"kms:CreateGrant\",\"kms:ReEncryptFrom\"],\"Resource\":\"*\",\"Effect\":\"Allow\"},{\"Condition\":{\"StringEquals\":{\"aws:ResourceTag/wiz\":\"auto-gen-cmk\"}},\"Action\":[\"kms:GetKeyPolicy\",\"kms:PutKeyPolicy\"],\"Resource\":\"*\",\"Effect\":\"Allow\"},{\"Condition\":{\"StringEquals\":{\"ec2:ResourceTag/wiz\":\"auto-gen-snapshot\"}},\"Action\":[\"ec2:DeleteSnapshot\",\"ec2:ModifySnapshotAttribute\"],\"Resource\":\"*\",\"Effect\":\"Allow\"}]}"
+      Roles:
+        - !Ref IAMRole30
+      PolicyName: "WizScannerPolicy"
+
+  IAMPolicy21:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Condition\":{\"StringEquals\":{\"aws:ResourceTag/wiz\":\"auto-gen-snapshot\"}},\"Action\":[\"redshift:DeleteClusterSnapshot\",\"redshift:AuthorizeSnapshotAccess\",\"redshift:RevokeSnapshotAccess\"],\"Resource\":\"*\",\"Effect\":\"Allow\"},{\"Action\":[\"redshift:CreateTags\"],\"Resource\":\"arn:aws:redshift:*:*:snapshot:*/*\",\"Effect\":\"Allow\"},{\"Action\":[\"redshift:DescribeClusterSnapshots\",\"redshift:DescribeClusters\"],\"Resource\":\"*\",\"Effect\":\"Allow\"},{\"Condition\":{\"StringEquals\":{\"aws:RequestTag/wiz\":\"auto-gen-snapshot\"}},\"Action\":[\"redshift:CreateClusterSnapshot\"],\"Resource\":\"*\",\"Effect\":\"Allow\"},{\"Action\":[\"rds:DescribeDBClusters\",\"rds:DescribeDBClusterSnapshots\",\"rds:DescribeDBInstances\",\"rds:DescribeDBSnapshots\",\"rds:DescribeDBSubnetGroups\",\"rds:ListTagsForResource\",\"rds:AddTagsToResource\"],\"Resource\":\"*\",\"Effect\":\"Allow\"},{\"Action\":[\"rds:DeleteDBClusterSnapshot\",\"rds:CopyDBClusterSnapshot\",\"rds:ModifyDBClusterSnapshotAttribute\"],\"Resource\":\"arn:aws:rds:*:*:cluster-snapshot:wiz-autogen-*\",\"Effect\":\"Allow\"},{\"Action\":[\"rds:DeleteDBSnapshot\",\"rds:CopyDBSnapshot\",\"rds:ModifyDBSnapshotAttribute\"],\"Resource\":\"arn:aws:rds:*:*:snapshot:wiz-autogen-*\",\"Effect\":\"Allow\"},{\"Condition\":{\"StringEquals\":{\"rds:req-tag/wiz\":\"auto-gen-snapshot\"}},\"Action\":[\"rds:CreateDBClusterSnapshot\",\"rds:CreateDBSnapshot\"],\"Resource\":\"*\",\"Effect\":\"Allow\"},{\"Action\":[\"s3:GetObject\",\"s3:ListBucket\"],\"Resource\":\"*\",\"Effect\":\"Allow\"},{\"Condition\":{\"StringLike\":{\"kms:ViaService\":\"rds.*.amazonaws.com\"}},\"Action\":[\"kms:CreateGrant\",\"kms:ReEncrypt*\"],\"Resource\":\"*\",\"Effect\":\"Allow\"},{\"Action\":[\"dynamodb:Scan\",\"dynamodb:DescribeTable\"],\"Resource\":\"*\",\"Effect\":\"Allow\"}]}"
+      Roles:
+        - !Ref IAMRole30
+      PolicyName: "WizDataScanningPolicy"
+
+  IAMPolicy22:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"lambda:GetFunction\",\"lambda:GetLayerVersion\",\"ecr:BatchGetImage\",\"ecr:GetAuthorizationToken\",\"ecr:GetDownloadUrlForLayer\",\"ecr-public:GetAuthorizationToken\"],\"Resource\":\"*\",\"Effect\":\"Allow\"}]}"
+      Roles:
+        - !Ref IAMRole30
+      PolicyName: "WizServerlessScanningPolicy"
+
+  IAMPolicy23:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ec2:GetTransitGateway*\",\"ec2:Search*\"],\"Resource\":[\"*\"],\"Effect\":\"Allow\",\"Sid\":\"AllowTGWAccess\"}]}"
+      Roles:
+        - !Sub "${IAMRole39}-${IAMRole25}"
+      PolicyName: !Sub "${IAMPolicy26}-${IAMRole25}"
+
+  IAMPolicy24:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: !Sub "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"acm:GetCertificate\",\"apigateway:GET\",\"backup:DescribeGlobalSettings\",\"backup:GetBackupVaultAccessPolicy\",\"backup:GetBackupVaultNotifications\",\"backup:ListBackupVaults\",\"backup:ListTags\",\"cloudtrail:GetInsightSelectors\",\"cloudtrail:ListTrails\",\"codebuild:BatchGetProjects\",\"codebuild:GetResourcePolicy\",\"codebuild:ListProjects\",\"cognito-identity:DescribeIdentityPool\",\"connect:ListInstances\",\"connect:ListInstanceAttributes\",\"connect:ListInstanceStorageConfigs\",\"connect:ListSecurityKeys\",\"connect:ListLexBots\",\"connect:ListLambdaFunctions\",\"connect:ListApprovedOrigins\",\"connect:ListIntegrationAssociations\",\"dynamodb:DescribeKinesisStre${IAMPolicy12}ngDestination\",\"dynamodb:ListExports\",\"profile:GetDomain\",\"profile:ListDomains\",\"profile:ListIntegrations\",\"voiceid:DescribeDomain\",\"wisdom:GetAssistant\",\"ec2:CopySnapshot\",\"ec2:CreateSnapshot\",\"ec2:CreateTags\",\"ec2:GetEbsEncryptionByDefault\",\"ec2:SearchTransitGatewayRoutes\",\"ec2:SearchTransitGatewayRoutes\",\"ecr:BatchGetImage\",\"ecr:GetAuthorizationToken\",\"ecr:GetDownloadUrlForLayer\",\"ecr:GetRegistryPolicy\",\"eks:ListTagsForResource\",\"elasticfilesystem:DescribeAccessPoints\",\"elasticfilesystem:DescribeFileSystemPolicy\",\"glacier:GetDataRetrievalPolicy\",\"glacier:GetVaultLock\",\"glue:GetConnection\",\"glue:GetSecurityConfiguration\",\"glue:GetTags\",\"identitystore:ListUsers\",\"identitystore:ListGroups\",\"kafka:ListClusters\",\"kendra:DescribeDataSource\",\"kendra:DescribeIndex\",\"kendra:ListDataSources\",\"kendra:ListIndices\",\"kendra:ListTagsForResource\",\"kinesisanalytics:DescribeApplication\",\"kinesisanalytics:ListApplications\",\"kinesisanalytics:ListTagsForResource\",\"kinesisvideo:GetDataEndpoint\",\"kinesisvideo:ListStreams\",\"kinesisvideo:ListTagsForStream\",\"kms:GetKeyRotationStatus\",\"kms:ListResourceTags\",\"kms:CreateGrant\",\"kms:CreateKey\",\"kms:DescribeKey\",\"lambda:GetFunction\",\"lambda:GetLayerVersion\",\"logs:ListTagsForResource\",\"s3:ListMultiRegionAccessPoints\",\"s3:GetMultiRegionAccessPointPolicy\",\"ses:DescribeActiveReceiptRuleSet\",\"ses:GetAccount\",\"ses:GetConfigurationSet\",\"ses:GetConfigurationSetEventDestinations\",\"ses:GetDedicatedIps\",\"ses:GetEmailIdentity\",\"ses:ListConfigurationSets\",\"ses:ListDedicatedIpPools\",\"ses:ListReceiptFilters\",\"sqs:GetQueueAttributes\",\"wafv2:GetLoggingConfiguration\",\"wafv2:GetWebACLForResource\"],\"Resource\":\"*\",\"Effect\":\"Allow\",\"Sid\":\"FullAccess\"},{\"Action\":[\"s3:GetObject\",\"s3:GetBucketLocation\",\"s3:GetObjectTagging\",\"s3:ListBucket\"],\"Resource\":[\"arn:aws:s3:::*terraform*\",\"arn:aws:s3:::*tfstate*\",\"arn:aws:s3:::*tf?state*\",\"arn:aws:s3:::*cloudtrail*\",\"arn:aws:s3:::elasticbeanstalk-*\"],\"Effect\":\"Allow\",\"Sid\":\"WizAccessS3\"}]}"
+      Roles:
+        - !Ref IAMRole35
+      PolicyName: "WizFullPolicy"
+
+  IAMPolicy25:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"events:PutEvents\"],\"Resource\":\"arn:aws:events:*:319539850501:event-bus/IamAccessAnalyzerPipeline-EventBus\",\"Effect\":\"Allow\",\"Sid\":\"eventBus\"}]}"
+      Roles:
+        - !Sub "SC-${EC2PrefixList.OwnerId}-pp-tqjopbtnqo3rg-eventRole"
+      PolicyName: !Sub "SC-${EC2PrefixList.OwnerId}-pp-tqjopbtnqo3rg-eventPolicy"
+
+  IAMPolicy26:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"support:DescribeTrustedAdvisorChecks\"],\"Resource\":[\"*\"],\"Effect\":\"Allow\",\"Sid\":\"AllowTrustedAdvisor\"},{\"Action\":[\"iam:*\"],\"Resource\":[\"arn:aws:iam::*:role/governance/*\"],\"Effect\":\"Allow\",\"Sid\":\"AllowIAM\"},{\"Condition\":{\"StringEquals\":{\"aws:RequestTag/Governance\":\"maxar\"}},\"Action\":[\"cloudformation:*\"],\"Resource\":[\"*\"],\"Effect\":\"Allow\",\"Sid\":\"AllowCloudFormation\"},{\"Action\":[\"ec2:ExportTransitGatewayRoutes\",\"ec2:GetTransitGateway*\",\"ec2:Search*\"],\"Resource\":[\"*\"],\"Effect\":\"Allow\",\"Sid\":\"AllowTGWAccess\"}]}"
+      Roles:
+        - !Ref IAMRole39
+      PolicyName: "Maxar-Security-Audit-Policy"
+
+  IAMInstanceProfile:
+    Type: "AWS::IAM::InstanceProfile"
+    Properties:
+      Path: "/"
+      InstanceProfileName: !Ref IAMRole2
+      Roles:
+        - !Ref IAMRole2
+
+  IAMInstanceProfile2:
+    Type: "AWS::IAM::InstanceProfile"
+    Properties:
+      Path: "/"
+      InstanceProfileName: !Ref IAMRole9
+      Roles:
+        - !Ref IAMRole9
+
+  IAMInstanceProfile3:
+    Type: "AWS::IAM::InstanceProfile"
+    Properties:
+      Path: "/"
+      InstanceProfileName: !Ref IAMRole14
+      Roles:
+        - !Ref IAMRole14
+
+  IAMInstanceProfile4:
+    Type: "AWS::IAM::InstanceProfile"
+    Properties:
+      Path: "/"
+      InstanceProfileName: !Ref IAMRole17
+      Roles:
+        - !Ref IAMRole17
+
+  IAMInstanceProfile5:
+    Type: "AWS::IAM::InstanceProfile"
+    Properties:
+      Path: "/"
+      InstanceProfileName: !Ref IAMRole28
+      Roles:
+        - !Ref IAMRole28
+
+  IAMInstanceProfile6:
+    Type: "AWS::IAM::InstanceProfile"
+    Properties:
+      Path: "/"
+      InstanceProfileName: !Ref IAMRole32
+      Roles:
+        - !Ref IAMRole32
+
+  IAMAccessKey:
+    Type: "AWS::IAM::AccessKey"
+    Properties:
+      Status: "Active"
+      UserName: "CD_deployer"
+
+  IAMAccessKey2:
+    Type: "AWS::IAM::AccessKey"
+    Properties:
+      Status: "Active"
+      UserName: "CD_deployer"
+
+  SecretsManagerSecret:
+    Type: "AWS::SecretsManager::Secret"
+    Properties:
+      Name: !Sub "${RDSDBInstance}-dev-pw"
+      Tags:
+        - Key: "Project"
+          Value: "Fallout"
+        - Key: "POC"
+          Value: "Jim"
+      SecretString: !Sub "{\"username\":\"postgres\",\"password\":\"fIBhrB3FeaIC6nToeD22\",\"engine\":\"postgres\",\"host\":\"${RDSDBInstance}.csosy4fcuokb.${AWS::Region}.rds.amazonaws.com\",\"port\":${RDSDBInstance.Endpoint.Port},\"dbname\":\"${RDSDBInstance}\",\"dbInstanceIdentifier\":\"${RDSDBInstance}\"}"
+
+  CertificateManagerCertificate:
+      Type: "AWS::CertificateManager::Certificate"
+      Properties:
+          DomainName: "*.rapidprototypeteam.net"
+          SubjectAlternativeNames:
+            - "*.rapidprototypeteam.net"
+          DomainValidationOptions:
+            -
+              DomainName: "*.rapidprototypeteam.net"
+              ValidationDomain: "*.rapidprototypeteam.net"
+          CertificateTransparencyLoggingPreference: "ENABLED"
+
+  KMSKey:
+      Type: "AWS::KMS::Key"
+      Properties:
+          Enabled: true
+          Description: "Encryption for flow log objects"
+          KeyUsage: "ENCRYPT_DECRYPT"
+          KeyPolicy: !Sub |
+              {
+                "Version" : "2012-10-17",
+                "Statement" : [ {
+                  "Sid" : "flowLogPolicy",
+                  "Effect" : "Allow",
+                  "Principal" : {
+                    "Service" : [ "delivery.logs.amazonaws.com", "logs.${AWS::Region}.amazonaws.com" ]
+                  },
+                  "Action" : [ "kms:ReEncrypt*", "kms:GenerateDataKey*", "kms:Encrypt", "kms:DescribeKey", "kms:Decrypt" ],
+                  "Resource" : "*"
+                }, {
+                  "Sid" : "",
+                  "Effect" : "Allow",
+                  "Principal" : {
+                    "AWS" : [ "arn:aws:iam::${EC2PrefixList.OwnerId}:root", "arn:aws:iam::433135671378:root" ]
+                  },
+                  "Action" : "kms:*",
+                  "Resource" : "*"
+                } ]
+              }
+          KeySpec: "SYMMETRIC_DEFAULT"
+          MultiRegion: false
+
+  KMSKey2:
+      Type: "AWS::KMS::Key"
+      Properties:
+          Enabled: true
+          Description: "auto-generated by Wiz"
+          KeyUsage: "ENCRYPT_DECRYPT"
+          KeyPolicy: !Sub |
+              {
+                "Version" : "2012-10-17",
+                "Id" : "WizKeyPolicy",
+                "Statement" : [ {
+                  "Sid" : "Enable IAM User Permissions",
+                  "Effect" : "Allow",
+                  "Principal" : {
+                    "AWS" : "arn:aws:iam::${EC2PrefixList.OwnerId}:root"
+                  },
+                  "Action" : "kms:*",
+                  "Resource" : "*"
+                }, {
+                  "Sid" : "Enable IAM User Permissions",
+                  "Effect" : "Allow",
+                  "Principal" : {
+                    "AWS" : "arn:aws:iam::${EC2PrefixList.OwnerId}:role/governance/${IAMRole30}"
+                  },
+                  "Action" : "kms:*",
+                  "Resource" : "*"
+                }, {
+                  "Sid" : "Enable IAM User Permissions",
+                  "Effect" : "Allow",
+                  "Principal" : {
+                    "AWS" : "arn:aws:sts::640574606290:assumed-role/WizOrchestratorNodePoolRole/i-0f0fcc9681baa54e5"
+                  },
+                  "Action" : "kms:*",
+                  "Resource" : "*"
+                }, {
+                  "Sid" : "Enable IAM User Permissions",
+                  "Effect" : "Allow",
+                  "Principal" : {
+                    "AWS" : "arn:aws:iam::640574606290:root"
+                  },
+                  "Action" : "kms:*",
+                  "Resource" : "*"
+                } ]
+              }
+          KeySpec: "SYMMETRIC_DEFAULT"
+          Tags:
+            -
+              Key: "wiz"
+              Value: "auto-gen-cmk"
+          MultiRegion: false
+
+  KMSAlias:
+      Type: "AWS::KMS::Alias"
+      Properties:
+          AliasName: "alias/wizKey"
+          TargetKeyId: !Ref KMSKey2
+
+  WAFv2WebACL:
+      Type: "AWS::WAFv2::WebACL"
+      Properties:
+          Name: "fallout-wacl"
+          Description: ""
+          DefaultAction:
+              Allow: {}
+          VisibilityConfig:
+              SampledRequestsEnabled: true
+              CloudWatchMetricsEnabled: true
+              MetricName: "fallout-wacl"
+          Scope: "REGIONAL"
+          Rules:
+            -
+              Name: "AWS-AWSManagedRulesCommonRuleSet"
+              Priority: 0
+              OverrideAction:
+                  None: {}
+              Statement:
+                  ManagedRuleGroupStatement:
+                      VendorName: "AWS"
+                      Name: "AWSManagedRulesCommonRuleSet"
+              VisibilityConfig:
+                  SampledRequestsEnabled: true
+                  CloudWatchMetricsEnabled: true
+                  MetricName: "AWS-AWSManagedRulesCommonRuleSet"
+
+  WAFv2WebACLAssociation:
+      Type: "AWS::WAFv2::WebACLAssociation"
+      Properties:
+          ResourceArn: !Ref ElasticLoadBalancingV2LoadBalancer3
+
+  EC2SecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "launch-wizard-1 created 2021-11-19T09:18:52.620-07:00"
+      GroupName: "fallout-bastion-allow-ssh-internet"
+      VpcId: !Ref EC2VPC
+      SecurityGroupIngress:
+        - CidrIp: "158.184.209.0/24"
+          Description: "Herndon"
+          FromPort: 22
+          IpProtocol: "tcp"
+          ToPort: 22
+        - CidrIp: "205.166.175.0/24"
+          Description: "Longmont"
+          FromPort: 22
+          IpProtocol: "tcp"
+          ToPort: 22
+        - CidrIp: "173.242.16.0/24"
+          Description: "Chy"
+          FromPort: 22
+          IpProtocol: "tcp"
+          ToPort: 22
+        - CidrIp: "71.237.107.138/32"
+          FromPort: 22
+          IpProtocol: "tcp"
+          ToPort: 22
+        - CidrIp: "68.39.160.171/32"
+          Description: "Jacob"
+          FromPort: 22
+          IpProtocol: "tcp"
+          ToPort: 22
+        - CidrIpv6: "2600:6c67:2e7f:f0ec:1db:f33e:47dd:aa4f/128"
+          Description: "Katie"
+          FromPort: 22
+          IpProtocol: "tcp"
+          ToPort: 22
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+
+  EC2SecurityGroup2:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "Managed by Terraform"
+      GroupName: "interface_sg"
+      Tags:
+        - Key: "Name"
+          Value: "Interface Endpoints Security Group"
+      VpcId: !Ref EC2VPC
+      SecurityGroupIngress:
+        - CidrIp: !GetAtt EC2VPC.CidrBlock
+          IpProtocol: "-1"
+      SecurityGroupEgress:
+        - CidrIp: !GetAtt EC2VPC.CidrBlock
+          IpProtocol: "-1"
+
+  EC2SecurityGroup3:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "2022-01-11T14:17:36.231Z"
+      GroupName: "geonos-1818"
+      VpcId: !Ref EC2VPC
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+
+  EC2SecurityGroup4:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "Created by RDS management console"
+      GroupName: "Scarif-security-group"
+      VpcId: !Ref EC2VPC
+      SecurityGroupIngress:
+        - SourceSecurityGroupId: !Ref EC2SecurityGroup9
+          SourceSecurityGroupOwnerId: !GetAtt EC2PrefixList.OwnerId
+          FromPort: !GetAtt RDSDBInstance.Endpoint.Port
+          IpProtocol: "tcp"
+          ToPort: !GetAtt RDSDBInstance.Endpoint.Port
+        - SourceSecurityGroupId: !Ref EC2SecurityGroup3
+          SourceSecurityGroupOwnerId: !GetAtt EC2PrefixList.OwnerId
+          FromPort: !GetAtt RDSDBInstance.Endpoint.Port
+          IpProtocol: "tcp"
+          ToPort: !GetAtt RDSDBInstance.Endpoint.Port
+        - SourceSecurityGroupId: !Ref EC2SecurityGroup14
+          SourceSecurityGroupOwnerId: !GetAtt EC2PrefixList.OwnerId
+          Description: "dathomir"
+          FromPort: !GetAtt RDSDBInstance.Endpoint.Port
+          IpProtocol: "tcp"
+          ToPort: !GetAtt RDSDBInstance.Endpoint.Port
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+
+  EC2SecurityGroup5:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "launch-wizard-4 created 2023-05-24T17:37:58.540Z"
+      GroupName: "launch-wizard-4"
+      VpcId: !Ref EC2VPC
+      SecurityGroupIngress:
+        - CidrIp: "0.0.0.0/0"
+          FromPort: 22
+          IpProtocol: "tcp"
+          ToPort: 22
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+
+  EC2SecurityGroup6:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "launch-wizard-6 created 2023-09-06T17:53:35.467Z"
+      GroupName: "launch-wizard-6"
+      VpcId: !Ref EC2VPC
+      SecurityGroupIngress:
+        - CidrIp: "0.0.0.0/0"
+          FromPort: 80
+          IpProtocol: "tcp"
+          ToPort: 80
+        - CidrIp: "0.0.0.0/0"
+          FromPort: 22
+          IpProtocol: "tcp"
+          ToPort: 22
+        - CidrIp: "0.0.0.0/0"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+
+  EC2SecurityGroup7:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: !Sub "Security group attached to ${RDSDBInstance} to allow EC2 instances with specific security groups attached to connect to the database. Modification could lead to connection loss."
+      GroupName: "rds-ec2-1"
+      VpcId: !Ref EC2VPC
+      SecurityGroupIngress:
+        - SourceSecurityGroupId: !Ref EC2SecurityGroup8
+          SourceSecurityGroupOwnerId: !GetAtt EC2PrefixList.OwnerId
+          Description: !Sub "Rule to allow connections from EC2 instances with ${EC2SecurityGroup8} attached"
+          FromPort: !GetAtt RDSDBInstance.Endpoint.Port
+          IpProtocol: "tcp"
+          ToPort: !GetAtt RDSDBInstance.Endpoint.Port
+
+  EC2SecurityGroup8:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: !Sub "Security group attached to instances to securely connect to ${RDSDBInstance}. Modification could lead to connection loss."
+      GroupName: "ec2-rds-1"
+      VpcId: !Ref EC2VPC
+      SecurityGroupEgress:
+        - DestinationSecurityGroupId: !Ref EC2SecurityGroup7
+          Description: !Sub "Rule to allow connections to ${RDSDBInstance} from any instances this security group is attached to"
+          FromPort: !GetAtt RDSDBInstance.Endpoint.Port
+          IpProtocol: "tcp"
+          ToPort: !GetAtt RDSDBInstance.Endpoint.Port
+
+  EC2SecurityGroup9:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "launch-wizard-1 created 2021-11-19T09:29:37.924-07:00"
+      GroupName: "fallout-workstation"
+      VpcId: !Ref EC2VPC
+      SecurityGroupIngress:
+        - CidrIp: "214.3.138.230/32"
+          Description: "DIA"
+          FromPort: 80
+          IpProtocol: "tcp"
+          ToPort: 80
+        - CidrIp: "214.14.244.191/32"
+          Description: "Customer"
+          FromPort: 80
+          IpProtocol: "tcp"
+          ToPort: 80
+        - SourceSecurityGroupId: !Ref EC2SecurityGroup16
+          SourceSecurityGroupOwnerId: !GetAtt EC2PrefixList.OwnerId
+          FromPort: 80
+          IpProtocol: "tcp"
+          ToPort: 80
+        - SourceSecurityGroupId: "sg-057a2b05eb2709f00"
+          SourceSecurityGroupOwnerId: !GetAtt EC2PrefixList.OwnerId
+          FromPort: 0
+          IpProtocol: "tcp"
+          ToPort: 65535
+        - SourceSecurityGroupId: !Ref EC2SecurityGroup16
+          SourceSecurityGroupOwnerId: !GetAtt EC2PrefixList.OwnerId
+          FromPort: 8080
+          IpProtocol: "tcp"
+          ToPort: 8080
+        - CidrIp: "214.3.138.230/32"
+          Description: "DIA"
+          IpProtocol: "-1"
+        - SourceSecurityGroupId: !Ref EC2SecurityGroup16
+          SourceSecurityGroupOwnerId: !GetAtt EC2PrefixList.OwnerId
+          FromPort: 8000
+          IpProtocol: "tcp"
+          ToPort: 8000
+        - CidrIp: !GetAtt EC2VPC.CidrBlock
+          Description: ""
+          FromPort: 22
+          IpProtocol: "tcp"
+          ToPort: 22
+        - CidrIp: "73.3.170.14/32"
+          FromPort: 22
+          IpProtocol: "tcp"
+          ToPort: 22
+        - CidrIp: "158.184.209.19/32"
+          FromPort: 22
+          IpProtocol: "tcp"
+          ToPort: 22
+        - CidrIp: !GetAtt EC2VPC.CidrBlock
+          FromPort: 5672
+          IpProtocol: "tcp"
+          ToPort: 5672
+        - CidrIp: "214.14.244.191/32"
+          Description: "Customer"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+        - SourceSecurityGroupId: !Ref EC2SecurityGroup16
+          SourceSecurityGroupOwnerId: !GetAtt EC2PrefixList.OwnerId
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+
+  EC2SecurityGroup10:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "2022-10-06T21:31:41.161Z"
+      GroupName: "dathom-9554"
+      VpcId: !Ref EC2VPC
+      SecurityGroupIngress:
+        - CidrIp: "0.0.0.0/0"
+          FromPort: 80
+          IpProtocol: "tcp"
+          ToPort: 80
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+
+  EC2SecurityGroup11:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "launch-wizard-5 created 2023-05-24T17:59:46.272Z"
+      GroupName: "launch-wizard-5"
+      VpcId: !Ref EC2VPC
+      SecurityGroupIngress:
+        - CidrIp: "0.0.0.0/0"
+          FromPort: 22
+          IpProtocol: "tcp"
+          ToPort: 22
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+
+  EC2SecurityGroup12:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "Allows access to app"
+      GroupName: "rdt-access-sg"
+      VpcId: !Ref EC2VPC
+      SecurityGroupIngress:
+        - CidrIp: "173.242.16.0/24"
+          Description: "Chy"
+          FromPort: 80
+          IpProtocol: "tcp"
+          ToPort: 80
+        - CidrIp: "158.184.209.0/24"
+          Description: "Herndon"
+          FromPort: 80
+          IpProtocol: "tcp"
+          ToPort: 80
+        - CidrIp: "66.44.59.31/32"
+          Description: "Mary"
+          FromPort: 80
+          IpProtocol: "tcp"
+          ToPort: 80
+        - CidrIp: "205.166.175.0/24"
+          Description: "Longmont"
+          FromPort: 80
+          IpProtocol: "tcp"
+          ToPort: 80
+        - CidrIp: "214.3.138.230/32"
+          Description: "DIA"
+          FromPort: 80
+          IpProtocol: "tcp"
+          ToPort: 80
+        - CidrIp: "214.14.244.191/32"
+          Description: "Customer"
+          FromPort: 80
+          IpProtocol: "tcp"
+          ToPort: 80
+        - CidrIp: "73.201.219.216/32"
+          Description: "Jim"
+          FromPort: 80
+          IpProtocol: "tcp"
+          ToPort: 80
+        - CidrIp: "73.34.224.16/32"
+          Description: "Phil"
+          FromPort: 80
+          IpProtocol: "tcp"
+          ToPort: 80
+        - CidrIp: "184.191.76.96/32"
+          Description: "Marshall"
+          FromPort: 80
+          IpProtocol: "tcp"
+          ToPort: 80
+        - CidrIp: "45.22.249.74/32"
+          Description: "Jacob"
+          FromPort: 80
+          IpProtocol: "tcp"
+          ToPort: 80
+        - CidrIp: "173.67.247.25/32"
+          Description: "Ryan"
+          FromPort: 80
+          IpProtocol: "tcp"
+          ToPort: 80
+        - CidrIp: "24.67.164.123/32"
+          Description: "Katie"
+          FromPort: 80
+          IpProtocol: "tcp"
+          ToPort: 80
+        - CidrIp: "108.18.199.17/32"
+          Description: "Ryan"
+          FromPort: 80
+          IpProtocol: "tcp"
+          ToPort: 80
+        - CidrIp: "70.106.232.238/32"
+          Description: "Alan"
+          FromPort: 80
+          IpProtocol: "tcp"
+          ToPort: 80
+        - CidrIp: "73.128.13.134/32"
+          Description: "Jo"
+          FromPort: 80
+          IpProtocol: "tcp"
+          ToPort: 80
+        - CidrIp: "75.166.107.141/32"
+          Description: "Dennis"
+          FromPort: 80
+          IpProtocol: "tcp"
+          ToPort: 80
+        - CidrIpv6: "2002:4853:cd95:e472:3165:1fc9:c9ee:ceb7/128"
+          Description: "Ryan v6"
+          IpProtocol: "-1"
+        - CidrIp: "205.166.175.0/24"
+          Description: "Longmont"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+        - CidrIp: "173.242.16.0/24"
+          Description: "Chy"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+        - CidrIp: "158.184.209.0/24"
+          Description: "Herndon"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+        - CidrIp: "66.44.59.31/32"
+          Description: "Mary"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+        - CidrIp: !Sub "${EC2EIP}/32"
+          Description: "VPC External IP"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+        - CidrIp: "214.3.138.230/32"
+          Description: "DIA"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+        - CidrIp: "214.14.244.191/32"
+          Description: "Customer"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+        - CidrIp: "73.201.219.216/32"
+          Description: "Jim"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+        - CidrIp: "184.191.76.96/32"
+          Description: "Marshall"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+        - CidrIp: "99.139.221.164/32"
+          Description: "Hanna"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+        - CidrIp: "76.154.197.7/32"
+          Description: "Phil"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+        - CidrIp: "45.22.249.74/32"
+          Description: "Jacob"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+        - CidrIp: "173.67.247.25/32"
+          Description: "Ryan"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+        - CidrIp: "24.67.164.123/32"
+          Description: "Katie"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+        - CidrIp: "108.18.199.17/32"
+          Description: "Ryan"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+        - CidrIp: "173.72.178.165/32"
+          Description: "Alan"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+        - CidrIp: "71.178.196.138/32"
+          Description: "Martin"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+        - CidrIp: "71.63.54.74/32"
+          Description: "Ryan"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+        - CidrIp: "73.128.13.134/32"
+          Description: "Jo"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+        - CidrIp: "75.166.107.141/32"
+          Description: "Dennis"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+
+  EC2SecurityGroup13:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "launch-wizard-2 created 2023-05-22T17:56:45.061Z"
+      GroupName: "launch-wizard-2"
+      VpcId: !Ref EC2VPC
+      SecurityGroupIngress:
+        - CidrIp: "0.0.0.0/0"
+          FromPort: 22
+          IpProtocol: "tcp"
+          ToPort: 22
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+
+  EC2SecurityGroup14:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "2022-10-07T18:13:13.554Z"
+      GroupName: "dathom-5791"
+      VpcId: !Ref EC2VPC
+      SecurityGroupIngress:
+        - CidrIp: "0.0.0.0/0"
+          FromPort: 80
+          IpProtocol: "tcp"
+          ToPort: 80
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+
+  EC2SecurityGroup15:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "Allow all internal inbound traffic"
+      GroupName: "allow_internal_traffic"
+      Tags:
+        - Key: "Name"
+          Value: "allow_internal_traffic"
+      VpcId: !Ref EC2VPC
+      SecurityGroupIngress:
+        - SourceSecurityGroupId: "sg-084818dc9b31540dd"
+          SourceSecurityGroupOwnerId: !GetAtt EC2PrefixList.OwnerId
+          Description: "communicate internally"
+          IpProtocol: "-1"
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+        - CidrIpv6: "::/0"
+          IpProtocol: "-1"
+
+  EC2SecurityGroup16:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "Allow an IP in this VPC access to talk to our endpoints"
+      GroupName: "interface_endpoints_sg"
+      VpcId: !Ref EC2VPC
+      SecurityGroupIngress:
+        - CidrIp: !GetAtt EC2VPC.CidrBlock
+          IpProtocol: "-1"
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+
+  EC2SecurityGroup17:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "launch-wizard-3 created 2023-05-22T19:36:06.487Z"
+      GroupName: "launch-wizard-3"
+      VpcId: !Ref EC2VPC
+      SecurityGroupIngress:
+        - CidrIp: "0.0.0.0/0"
+          FromPort: 22
+          IpProtocol: "tcp"
+          ToPort: 22
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+
+  EC2SecurityGroup18:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "launch-wizard-1 created 2023-05-22T17:00:11.868Z"
+      GroupName: "launch-wizard-1"
+      VpcId: !Ref EC2VPC
+      SecurityGroupIngress:
+        - CidrIp: "0.0.0.0/0"
+          FromPort: 22
+          IpProtocol: "tcp"
+          ToPort: 22
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+
+  EC2KeyPair:
+    Type: "AWS::EC2::KeyPair"
+    Properties:
+      KeyName: "fallout-bastion"
+      KeyType: "rsa"
+
+  EC2KeyPair2:
+    Type: "AWS::EC2::KeyPair"
+    Properties:
+      KeyName: "phil-dev-env"
+      KeyType: "rsa"
+
+  EC2KeyPair3:
+    Type: "AWS::EC2::KeyPair"
+    Properties:
+      KeyName: "joseph-dev-env"
+      KeyType: "rsa"
+
+  EC2KeyPair4:
+    Type: "AWS::EC2::KeyPair"
+    Properties:
+      KeyName: "atl-fallout"
+      KeyType: "rsa"

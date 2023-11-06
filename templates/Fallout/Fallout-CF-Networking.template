@@ -1,0 +1,1408 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "EC2 Instances"
+Parameters:
+  AvailabilityZone:
+    Description: Name of availibility zone
+    Type: String
+    Default: us-east-1
+Resources:
+  EC2VPC:
+    Type: "AWS::EC2::VPC"
+    Properties:
+      CidrBlock: "10.233.160.0/20"
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      InstanceTenancy: !Ref ECSCluster2
+      Tags:
+        - Key: "Name"
+          Value: "dev"
+
+  EC2Subnet:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: !GetAtt EC2Instance.AvailabilityZone
+      CidrBlock: "10.233.164.0/22"
+      VpcId: !Ref EC2VPC
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: "Name"
+          Value: "dev-private-app-0"
+
+  EC2Subnet2:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: !GetAtt EC2Subnet4.AvailabilityZone
+      CidrBlock: "10.233.163.0/25"
+      VpcId: !Ref EC2VPC
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: "Name"
+          Value: "dev-private-persistence-1"
+
+  EC2Subnet3:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: !GetAtt EC2Subnet5.AvailabilityZone
+      CidrBlock: "10.233.161.0/25"
+      VpcId: !Ref EC2VPC
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: "Name"
+          Value: "dev-public-2"
+
+  EC2Subnet4:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: !GetAtt EC2Subnet2.AvailabilityZone
+      CidrBlock: "10.233.168.0/22"
+      VpcId: !Ref EC2VPC
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: "Name"
+          Value: "dev-private-app-1"
+
+  EC2Subnet5:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: !GetAtt EC2Subnet3.AvailabilityZone
+      CidrBlock: "10.233.163.128/25"
+      VpcId: !Ref EC2VPC
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: "Name"
+          Value: "dev-private-persistence-2"
+
+  EC2Subnet6:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: !GetAtt EC2Instance.AvailabilityZone
+      CidrBlock: "10.233.162.128/25"
+      VpcId: !Ref EC2VPC
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: "Name"
+          Value: "dev-private-persistence-0"
+
+  EC2Subnet7:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: !GetAtt EC2Subnet2.AvailabilityZone
+      CidrBlock: "10.233.160.128/25"
+      VpcId: !Ref EC2VPC
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: "Name"
+          Value: "dev-public-1"
+
+  EC2Subnet8:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: !GetAtt EC2Instance.AvailabilityZone
+      CidrBlock: "10.233.160.0/25"
+      VpcId: !Ref EC2VPC
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: "Name"
+          Value: "dev-public-0"
+
+  EC2Subnet9:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: !GetAtt EC2Subnet3.AvailabilityZone
+      CidrBlock: "10.233.172.0/22"
+      VpcId: !Ref EC2VPC
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: "Name"
+          Value: "dev-private-app-2"
+
+  EC2InternetGateway:
+    Type: "AWS::EC2::InternetGateway"
+    Properties:
+      Tags:
+        - Key: "Name"
+          Value: "dev"
+
+  EC2EIP:
+    Type: "AWS::EC2::EIP"
+    Properties:
+      Domain: "vpc"
+
+  EC2EIPAssociation:
+    Type: "AWS::EC2::EIPAssociation"
+    Properties:
+      AllocationId: !GetAtt EC2EIP.AllocationId
+      NetworkInterfaceId: "eni-0f8fcb4e5c1e1c014"
+      PrivateIpAddress: "10.233.160.96"
+
+  EC2VPCDHCPOptionsAssociation:
+    Type: "AWS::EC2::VPCDHCPOptionsAssociation"
+    Properties:
+      DhcpOptionsId: "dopt-085423ad6d6245e6f"
+      VpcId: !Ref EC2VPC
+
+  EC2NetworkAcl:
+    Type: "AWS::EC2::NetworkAcl"
+    Properties:
+      VpcId: !Ref EC2VPC
+      Tags:
+        - Key: "Name"
+          Value: "dev-public-subnets"
+        - Key: "public"
+          Value: "True"
+
+  EC2NetworkAcl2:
+    Type: "AWS::EC2::NetworkAcl"
+    Properties:
+      VpcId: !Ref EC2VPC
+      Tags:
+        - Key: "Name"
+          Value: "dev-private-persistence-subnets"
+
+  EC2NetworkAcl3:
+    Type: "AWS::EC2::NetworkAcl"
+    Properties:
+      VpcId: !Ref EC2VPC
+      Tags:
+        - Key: "Name"
+          Value: "dev-private-app-subnets"
+
+  EC2NetworkAclEntry:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl
+      PortRange:
+        From: 22
+        To: 22
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 100
+
+  EC2NetworkAclEntry2:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl
+      PortRange:
+        From: 80
+        To: 80
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 110
+
+  EC2NetworkAclEntry3:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl
+      PortRange:
+        From: 443
+        To: 443
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 120
+
+  EC2NetworkAclEntry4:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl
+      PortRange:
+        From: 32768
+        To: 65535
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 130
+
+  EC2NetworkAclEntry5:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl
+      PortRange:
+        From: 12345
+        To: 12345
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 140
+
+  EC2NetworkAclEntry6:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl
+      PortRange:
+        From: 0
+        To: 65535
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 150
+
+  EC2NetworkAclEntry7:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl
+      PortRange:
+        From: 0
+        To: 65535
+      Protocol: 17
+      RuleAction: "allow"
+      RuleNumber: 160
+
+  EC2NetworkAclEntry8:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "69.243.110.41/32"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl
+      PortRange:
+        From: 22
+        To: 22
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 90
+
+  EC2NetworkAclEntry9:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "66.44.59.31/32"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl
+      PortRange:
+        From: 22
+        To: 22
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 91
+
+  EC2NetworkAclEntry10:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "69.144.116.166/32"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl
+      PortRange:
+        From: 22
+        To: 22
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 92
+
+  EC2NetworkAclEntry11:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "73.3.170.14/32"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl
+      PortRange:
+        From: 22
+        To: 22
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 93
+
+  EC2NetworkAclEntry12:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "71.115.29.41/32"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl
+      PortRange:
+        From: 22
+        To: 22
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 94
+
+  EC2NetworkAclEntry13:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "108.51.131.125/32"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl
+      PortRange:
+        From: 22
+        To: 22
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 95
+
+  EC2NetworkAclEntry14:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "184.96.240.95/32"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl
+      PortRange:
+        From: 22
+        To: 22
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 96
+
+  EC2NetworkAclEntry15:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "168.245.155.26/32"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl
+      PortRange:
+        From: 22
+        To: 22
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 97
+
+  EC2NetworkAclEntry16:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "184.96.253.233/32"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl
+      PortRange:
+        From: 22
+        To: 22
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 98
+
+  EC2NetworkAclEntry17:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "73.201.219.216/32"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl
+      PortRange:
+        From: 22
+        To: 22
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 99
+
+  EC2NetworkAclEntry18:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "158.184.209.19/32"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl
+      PortRange:
+        From: 22
+        To: 22
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 100
+
+  EC2NetworkAclEntry19:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl
+      PortRange:
+        From: 80
+        To: 80
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 110
+
+  EC2NetworkAclEntry20:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl
+      PortRange:
+        From: 443
+        To: 443
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 120
+
+  EC2NetworkAclEntry21:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl
+      PortRange:
+        From: 1024
+        To: 3388
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 130
+
+  EC2NetworkAclEntry22:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl
+      PortRange:
+        From: 51678
+        To: 51680
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 140
+
+  EC2NetworkAclEntry23:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl
+      PortRange:
+        From: 12345
+        To: 12345
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 150
+
+  EC2NetworkAclEntry24:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl
+      PortRange:
+        From: 3390
+        To: 65535
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 160
+
+  EC2NetworkAclEntry25:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "10.233.162.128/25"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl2
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 100
+
+  EC2NetworkAclEntry26:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "10.233.163.0/25"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl2
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 105
+
+  EC2NetworkAclEntry27:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "10.233.163.128/25"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl2
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 110
+
+  EC2NetworkAclEntry28:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "10.233.164.0/22"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl2
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 200
+
+  EC2NetworkAclEntry29:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "10.233.168.0/22"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl2
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 205
+
+  EC2NetworkAclEntry30:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "10.233.172.0/22"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl2
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 210
+
+  EC2NetworkAclEntry31:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl2
+      PortRange:
+        From: 0
+        To: 65535
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 400
+
+  EC2NetworkAclEntry32:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "10.0.0.0/8"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl2
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 605
+
+  EC2NetworkAclEntry33:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "172.16.0.0/12"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl2
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 615
+
+  EC2NetworkAclEntry34:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "192.168.0.0/16"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl2
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 625
+
+  EC2NetworkAclEntry35:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl2
+      PortRange:
+        From: 53
+        To: 53
+      Protocol: 17
+      RuleAction: "allow"
+      RuleNumber: 997
+
+  EC2NetworkAclEntry36:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl2
+      PortRange:
+        From: 1024
+        To: 65535
+      Protocol: 17
+      RuleAction: "allow"
+      RuleNumber: 998
+
+  EC2NetworkAclEntry37:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl2
+      PortRange:
+        From: 123
+        To: 123
+      Protocol: 17
+      RuleAction: "allow"
+      RuleNumber: 999
+
+  EC2NetworkAclEntry38:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "10.233.162.128/25"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl2
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 100
+
+  EC2NetworkAclEntry39:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "10.233.163.0/25"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl2
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 105
+
+  EC2NetworkAclEntry40:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "10.233.163.128/25"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl2
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 110
+
+  EC2NetworkAclEntry41:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "10.233.164.0/22"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl2
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 200
+
+  EC2NetworkAclEntry42:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "10.233.168.0/22"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl2
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 205
+
+  EC2NetworkAclEntry43:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "10.233.172.0/22"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl2
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 210
+
+  EC2NetworkAclEntry44:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl2
+      PortRange:
+        From: 3390
+        To: 65535
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 400
+
+  EC2NetworkAclEntry45:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "10.0.0.0/8"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl2
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 600
+
+  EC2NetworkAclEntry46:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "172.16.0.0/12"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl2
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 610
+
+  EC2NetworkAclEntry47:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "192.168.0.0/16"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl2
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 620
+
+  EC2NetworkAclEntry48:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl2
+      PortRange:
+        From: 123
+        To: 123
+      Protocol: 17
+      RuleAction: "allow"
+      RuleNumber: 998
+
+  EC2NetworkAclEntry49:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl2
+      PortRange:
+        From: 3390
+        To: 65535
+      Protocol: 17
+      RuleAction: "allow"
+      RuleNumber: 999
+
+  EC2NetworkAclEntry50:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "10.233.164.0/22"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl3
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 100
+
+  EC2NetworkAclEntry51:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "10.233.168.0/22"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl3
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 105
+
+  EC2NetworkAclEntry52:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "10.233.172.0/22"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl3
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 110
+
+  EC2NetworkAclEntry53:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "10.0.0.0/8"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl3
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 605
+
+  EC2NetworkAclEntry54:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "172.16.0.0/12"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl3
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 615
+
+  EC2NetworkAclEntry55:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "192.168.0.0/16"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl3
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 625
+
+  EC2NetworkAclEntry56:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl3
+      PortRange:
+        From: 0
+        To: 65535
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 1000
+
+  EC2NetworkAclEntry57:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: true
+      NetworkAclId: !Ref EC2NetworkAcl3
+      PortRange:
+        From: 0
+        To: 65535
+      Protocol: 17
+      RuleAction: "allow"
+      RuleNumber: 1100
+
+  EC2NetworkAclEntry58:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl3
+      PortRange:
+        From: 80
+        To: 80
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 120
+
+  EC2NetworkAclEntry59:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl3
+      PortRange:
+        From: 443
+        To: 443
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 130
+
+  EC2NetworkAclEntry60:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "73.3.170.14/32"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl3
+      PortRange:
+        From: 22
+        To: 22
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 140
+
+  EC2NetworkAclEntry61:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl3
+      PortRange:
+        From: 3390
+        To: 65535
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 400
+
+  EC2NetworkAclEntry62:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "10.0.0.0/8"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl3
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 600
+
+  EC2NetworkAclEntry63:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "172.16.0.0/12"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl3
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 610
+
+  EC2NetworkAclEntry64:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "192.168.0.0/16"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl3
+      Protocol: -1
+      RuleAction: "allow"
+      RuleNumber: 620
+
+  EC2NetworkAclEntry65:
+    Type: "AWS::EC2::NetworkAclEntry"
+    Properties:
+      CidrBlock: "0.0.0.0/0"
+      Egress: false
+      NetworkAclId: !Ref EC2NetworkAcl3
+      PortRange:
+        From: 1024
+        To: 3388
+      Protocol: 6
+      RuleAction: "allow"
+      RuleNumber: 997
+
+  EC2RouteTable:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref EC2VPC
+      Tags:
+        - Key: "Name"
+          Value: "dev-private-persistence-1"
+
+  EC2RouteTable2:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref EC2VPC
+      Tags:
+        - Key: "Name"
+          Value: "dev-public"
+
+  EC2RouteTable3:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref EC2VPC
+      Tags:
+        - Key: "Name"
+          Value: "dev-private-persistence-0"
+
+  EC2RouteTable4:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref EC2VPC
+      Tags:
+        - Key: "Name"
+          Value: "dev-private-app-2"
+
+  EC2RouteTable5:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref EC2VPC
+      Tags:
+        - Key: "Name"
+          Value: "dev-private-app-1"
+
+  EC2RouteTable6:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref EC2VPC
+      Tags:
+        - Key: "Name"
+          Value: "dev-private-app-0"
+
+  EC2RouteTable7:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref EC2VPC
+      Tags:
+        - Key: "Name"
+          Value: "dev-private-persistence-2"
+
+  EC2RouteTable8:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref EC2VPC
+
+  EC2Route:
+    Type: "AWS::EC2::Route"
+    Properties:
+      DestinationCidrBlock: "0.0.0.0/0"
+      NatGatewayId: !Ref EC2NatGateway2
+      RouteTableId: !Ref EC2RouteTable
+
+  EC2Route2:
+    Type: "AWS::EC2::Route"
+    Properties:
+      GatewayId: "vpce-03de32c6bb791d442"
+      RouteTableId: !Ref EC2RouteTable
+
+  EC2Route3:
+    Type: "AWS::EC2::Route"
+    Properties:
+      GatewayId: "vpce-05a2f2393597a64bc"
+      RouteTableId: !Ref EC2RouteTable
+
+  EC2Route4:
+    Type: "AWS::EC2::Route"
+    Properties:
+      DestinationCidrBlock: "0.0.0.0/0"
+      GatewayId: !Ref EC2InternetGateway
+      RouteTableId: !Ref EC2RouteTable2
+
+  EC2NatGateway:
+    Type: "AWS::EC2::NatGateway"
+    Properties:
+      SubnetId: !Ref EC2Subnet9
+      Tags:
+        - Key: "Name"
+          Value: "geo-3"
+
+  EC2NatGateway2:
+    Type: "AWS::EC2::NatGateway"
+    Properties:
+      SubnetId: !Ref EC2Subnet8
+      Tags:
+        - Key: "Name"
+          Value: "dev-nat-gateway-0"
+      AllocationId: !GetAtt EC2EIP.AllocationId
+
+  EC2NatGateway3:
+    Type: "AWS::EC2::NatGateway"
+    Properties:
+      SubnetId: !Ref EC2Subnet4
+      Tags:
+        - Key: "Name"
+          Value: "geo2"
+
+  EC2NatGateway4:
+    Type: "AWS::EC2::NatGateway"
+    Properties:
+      SubnetId: !Ref EC2Subnet
+      Tags:
+        - Key: "Name"
+          Value: "geo-1"
+
+  EC2VPCEndpoint:
+    Type: "AWS::EC2::VPCEndpoint"
+    Properties:
+      VpcEndpointType: "Gateway"
+      VpcId: !Ref EC2VPC
+      ServiceName: !Sub "com.amazonaws.${AWS::Region}.dynamodb"
+      PolicyDocument: "{\"Version\":\"2008-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":\"*\",\"Resource\":\"*\"}]}"
+      RouteTableIds:
+        - !Ref EC2RouteTable
+        - !Ref EC2RouteTable2
+        - !Ref EC2RouteTable3
+        - !Ref EC2RouteTable4
+        - !Ref EC2RouteTable5
+        - !Ref EC2RouteTable6
+        - !Ref EC2RouteTable7
+      PrivateDnsEnabled: false
+
+  EC2VPCEndpoint2:
+    Type: "AWS::EC2::VPCEndpoint"
+    Properties:
+      VpcEndpointType: "Gateway"
+      VpcId: !Ref EC2VPC
+      ServiceName: !Sub "com.amazonaws.${AWS::Region}.s3"
+      PolicyDocument: "{\"Version\":\"2008-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":\"*\",\"Resource\":\"*\"}]}"
+      RouteTableIds:
+        - !Ref EC2RouteTable
+        - !Ref EC2RouteTable2
+        - !Ref EC2RouteTable3
+        - !Ref EC2RouteTable4
+        - !Ref EC2RouteTable5
+        - !Ref EC2RouteTable6
+        - !Ref EC2RouteTable7
+      PrivateDnsEnabled: false
+
+  EC2VPCGatewayAttachment:
+    Type: "AWS::EC2::VPCGatewayAttachment"
+    Properties:
+      InternetGatewayId: !Ref EC2InternetGateway
+      VpcId: !Ref EC2VPC
+
+  EC2SubnetNetworkAclAssociation:
+    Type: "AWS::EC2::SubnetNetworkAclAssociation"
+    Properties:
+      SubnetId: !Ref EC2Subnet3
+      NetworkAclId: !Ref EC2NetworkAcl
+
+  EC2SubnetNetworkAclAssociation2:
+    Type: "AWS::EC2::SubnetNetworkAclAssociation"
+    Properties:
+      SubnetId: !Ref EC2Subnet7
+      NetworkAclId: !Ref EC2NetworkAcl
+
+  EC2SubnetNetworkAclAssociation3:
+    Type: "AWS::EC2::SubnetNetworkAclAssociation"
+    Properties:
+      SubnetId: !Ref EC2Subnet8
+      NetworkAclId: !Ref EC2NetworkAcl
+
+  EC2SubnetNetworkAclAssociation4:
+    Type: "AWS::EC2::SubnetNetworkAclAssociation"
+    Properties:
+      SubnetId: !Ref EC2Subnet5
+      NetworkAclId: !Ref EC2NetworkAcl2
+
+  EC2SubnetNetworkAclAssociation5:
+    Type: "AWS::EC2::SubnetNetworkAclAssociation"
+    Properties:
+      SubnetId: !Ref EC2Subnet2
+      NetworkAclId: !Ref EC2NetworkAcl2
+
+  EC2SubnetNetworkAclAssociation6:
+    Type: "AWS::EC2::SubnetNetworkAclAssociation"
+    Properties:
+      SubnetId: !Ref EC2Subnet6
+      NetworkAclId: !Ref EC2NetworkAcl2
+
+  EC2SubnetNetworkAclAssociation7:
+    Type: "AWS::EC2::SubnetNetworkAclAssociation"
+    Properties:
+      SubnetId: !Ref EC2Subnet9
+      NetworkAclId: !Ref EC2NetworkAcl3
+
+  EC2SubnetNetworkAclAssociation8:
+    Type: "AWS::EC2::SubnetNetworkAclAssociation"
+    Properties:
+      SubnetId: !Ref EC2Subnet4
+      NetworkAclId: !Ref EC2NetworkAcl3
+
+  EC2SubnetNetworkAclAssociation9:
+    Type: "AWS::EC2::SubnetNetworkAclAssociation"
+    Properties:
+      SubnetId: !Ref EC2Subnet
+      NetworkAclId: !Ref EC2NetworkAcl3
+
+  EC2SubnetRouteTableAssociation:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref EC2RouteTable
+      SubnetId: !Ref EC2Subnet2
+
+  EC2SubnetRouteTableAssociation2:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref EC2RouteTable2
+      SubnetId: !Ref EC2Subnet7
+
+  EC2SubnetRouteTableAssociation3:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref EC2RouteTable2
+      SubnetId: !Ref EC2Subnet3
+
+  EC2SubnetRouteTableAssociation4:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref EC2RouteTable2
+      SubnetId: !Ref EC2Subnet8
+
+  EC2SubnetRouteTableAssociation5:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref EC2RouteTable3
+      SubnetId: !Ref EC2Subnet6
+
+  EC2SubnetRouteTableAssociation6:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref EC2RouteTable4
+      SubnetId: !Ref EC2Subnet9
+
+  EC2SubnetRouteTableAssociation7:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref EC2RouteTable5
+      SubnetId: !Ref EC2Subnet4
+
+  EC2SubnetRouteTableAssociation8:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref EC2RouteTable6
+      SubnetId: !Ref EC2Subnet
+
+  EC2SubnetRouteTableAssociation9:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref EC2RouteTable7
+      SubnetId: !Ref EC2Subnet5
+
+  EC2PrefixList:
+    Type: "AWS::EC2::PrefixList"
+    Properties:
+      AddressFamily: "IPv4"
+      PrefixListName: "test_prefix_list"
+      MaxEntries: 20
+      Entries:
+        - Cidr: "71.115.29.41/32"
+          Description: "Ryan"
+        - Cidr: "158.184.209.103/32"
+          Description: "Martin-Arlington"
+        - Cidr: "168.245.155.0/25"
+          Description: "DIA2"
+        - Cidr: "69.144.116.166/32"
+          Description: "Katie"
+        - Cidr: "100.15.227.160/32"
+          Description: "Martin"
+        - Cidr: "66.44.59.31/32"
+          Description: "Mary"
+        - Cidr: "73.3.170.14/32"
+          Description: "Phil"
+        - Cidr: "184.96.225.238/32"
+          Description: "Dennis"
+        - Cidr: "73.201.219.216/32"
+          Description: "Jim"
+        - Cidr: "69.250.163.49/32"
+          Description: "Joe"
+        - Cidr: "168.245.155.26/32"
+          Description: "DIA"
+        - Cidr: "68.39.160.171/32"
+          Description: "Jacob"
+
+  EC2NetworkInsightsPath:
+    Type: "AWS::EC2::NetworkInsightsPath"
+    Properties:
+      Destination: "eni-06c463267e33378da"
+      Protocol: "tcp"
+      Source: "i-036d3c59a6df89089"
+
+  EC2NetworkInsightsPath2:
+    Type: "AWS::EC2::NetworkInsightsPath"
+    Properties:
+      Destination: "i-036d3c59a6df89089"
+      Protocol: "tcp"
+      Source: "eni-06c463267e33378da"
+
+  EC2NetworkInsightsPath3:
+    Type: "AWS::EC2::NetworkInsightsPath"
+    Properties:
+      Destination: "eni-06c463267e33378da"
+      Protocol: "tcp"
+      Source: "i-036d3c59a6df89089"
+
+  EC2NetworkInsightsAnalysis:
+    Type: "AWS::EC2::NetworkInsightsAnalysis"
+    Properties:
+      NetworkInsightsPathId: !Ref EC2NetworkInsightsPath
+
+  EC2NetworkInsightsAnalysis2:
+    Type: "AWS::EC2::NetworkInsightsAnalysis"
+    Properties:
+      NetworkInsightsPathId: !Ref EC2NetworkInsightsPath2
+
+  EC2NetworkInsightsAnalysis3:
+    Type: "AWS::EC2::NetworkInsightsAnalysis"
+    Properties:
+      NetworkInsightsPathId: !Ref EC2NetworkInsightsPath2
+
+  EC2NetworkInsightsAnalysis4:
+    Type: "AWS::EC2::NetworkInsightsAnalysis"
+    Properties:
+      NetworkInsightsPathId: !Ref EC2NetworkInsightsPath3
+
+  EC2NetworkInsightsAccessScope:
+    Type: "AWS::EC2::NetworkInsightsAccessScope"
+    Properties:
+      Tags:
+        - Key: "Description"
+          Value: "Identify ingress paths into your VPCs from Internet Gateways, Peering Connections, VPC Service Endpoints, VPN and Transit Gateways."
+        - Key: "Name"
+          Value: "AWS-VPC-Ingress (Amazon created)"
+
+  EC2NetworkInsightsAccessScope2:
+    Type: "AWS::EC2::NetworkInsightsAccessScope"
+    Properties:
+      Tags:
+        - Key: "Description"
+          Value: "Identify egress paths to Internet Gateways, Peering Connections, VPC Endpoints, VPN and Transit Gateways from all of your VPCs."
+        - Key: "Name"
+          Value: "AWS-VPC-Egress (Amazon created)"
+
+  EC2NetworkInsightsAccessScope3:
+    Type: "AWS::EC2::NetworkInsightsAccessScope"
+    Properties:
+      Tags:
+        - Key: "Description"
+          Value: "Identify egress paths from all Network Interfaces to Internet Gateways."
+        - Key: "Name"
+          Value: "AWS-IGW-Egress (Amazon created)"
+
+  EC2NetworkInsightsAccessScope4:
+    Type: "AWS::EC2::NetworkInsightsAccessScope"
+    Properties:
+      Tags:
+        - Key: "Description"
+          Value: "Identify ingress paths from Internet Gateways to all Network Interfaces."
+        - Key: "Name"
+          Value: "All-IGW-Ingress (Amazon created)"
+
+  Route53HostedZone:
+    Type: "AWS::Route53::HostedZone"
+    Properties:
+      Name: !Ref Route53RecordSet
+
+  Route53HostedZone2:
+    Type: "AWS::Route53::HostedZone"
+    Properties:
+      Name: !Sub "${S3Bucket17}."
+      VPCs:
+        - VPCRegion: !Ref AWS::Region
+          VPCId: !Ref EC2VPC
+
+  Route53RecordSet:
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      Name: !Ref Route53RecordSet2
+      Type: "NS"
+      TTL: 172800
+      ResourceRecords:
+        - "ns-1036.awsdns-01.org."
+        - "ns-301.awsdns-37.com."
+        - "ns-946.awsdns-54.net."
+        - "ns-1728.awsdns-24.co.uk."
+      HostedZoneId: !Ref Route53HostedZone
+
+  Route53RecordSet2:
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      Name: !Ref Route53RecordSet
+      Type: "SOA"
+      TTL: 900
+      ResourceRecords:
+        - "ns-1036.awsdns-01.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
+      HostedZoneId: !Ref Route53HostedZone
+
+  Route53RecordSet3:
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      Name: !Sub "\\052.${Route53RecordSet}"
+      Type: "A"
+      AliasTarget:
+        HostedZoneId: !GetAtt ElasticLoadBalancingV2LoadBalancer3.CanonicalHostedZoneID
+        DNSName: !Sub "${ElasticLoadBalancingV2LoadBalancer3.DNSName}."
+        EvaluateTargetHealth: true
+      HostedZoneId: !Ref Route53HostedZone
+
+  Route53RecordSet4:
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      Name: !Sub "_828691e0dec85fa115236944df6afabb.${Route53RecordSet}"
+      Type: "CNAME"
+      TTL: 300
+      ResourceRecords:
+        - "_3e79c8473d6ff27a66ddac4aafde8d5e.kzhndfqvzk.acm-validations.aws."
+      HostedZoneId: !Ref Route53HostedZone
+
+  Route53RecordSet5:
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      Name: !Sub "${S3Bucket17}."
+      Type: "NS"
+      TTL: 172800
+      ResourceRecords:
+        - "ns-1536.awsdns-00.co.uk."
+        - "ns-0.awsdns-00.com."
+        - "ns-1024.awsdns-00.org."
+        - "ns-512.awsdns-00.net."
+      HostedZoneId: !Ref Route53HostedZone2
+
+  Route53RecordSet6:
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      Name: !Sub "${S3Bucket17}."
+      Type: "SOA"
+      TTL: 15
+      ResourceRecords:
+        - "ns-1536.awsdns-00.co.uk. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
+      HostedZoneId: !Ref Route53HostedZone2
+
+  ServiceDiscoveryPrivateDnsNamespace:
+    Type: "AWS::ServiceDiscovery::PrivateDnsNamespace"
+    Properties:
+      Name: !Ref S3Bucket17
+
+  ServiceDiscoveryService:
+    Type: "AWS::ServiceDiscovery::Service"
+    Properties:
+      Name: !Sub "${S3Bucket17}-rmq"
+      NamespaceId: "ns-7mfunsleoaluy2qk"
+      DnsConfig:
+        DnsRecords:
+          - Type: "SRV"
+            TTL: 60
+        NamespaceId: "ns-7mfunsleoaluy2qk"
+        RoutingPolicy: "MULTIVALUE"
+      HealthCheckCustomConfig:
+        FailureThreshold: 1

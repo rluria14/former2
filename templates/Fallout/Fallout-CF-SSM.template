@@ -1,0 +1,383 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "EC2 Instances"
+Parameters:
+  AvailabilityZone:
+    Description: Name of availibility zone
+    Type: String
+    Default: us-east-1
+Resources:
+  SSMDocument:
+    Type: "AWS::SSM::Document"
+    Properties:
+      Name: "AWSQuickSetup-CreateAndAttachIAMToInstance-yoogl"
+      Content: !Sub |
+        {
+          "schemaVersion" : "0.3",
+          "description" : "Composite document for Quick Setup Managing Instances association. This document ensures IAM role for instance profile is created in account with all required policies",
+          "assumeRole" : "{{AutomationAssumeRole}}",
+          "parameters" : {
+            "AutomationAssumeRole" : {
+              "type" : "String"
+            },
+            "InstanceId" : {
+              "type" : "String"
+            },
+            "IsPolicyAttachAllowed" : {
+              "type" : "String"
+            }
+          },
+          "mainSteps" : [ {
+            "outputs" : [ {
+              "Type" : "String",
+              "Name" : "existingInstanceProfileRoleName",
+              "Selector" : "$.Payload.RoleName"
+            } ],
+            "inputs" : {
+              "Script" : "import boto3\n\ndef getInstanceProfileName(events, context):\n    ec2_client = boto3.client(\"ec2\")\n    response = ec2_client.describe_instances(InstanceIds=[events[\"InstanceId\"]])\n    if 'IamInstanceProfile' in response['Reservations'][0]['Instances'][0]:\n        return {'RoleName': response['Reservations'][0]['Instances'][0]['IamInstanceProfile']['Arn'].split('instance-profile/')[1]}\n    return {'RoleName': 'NoRoleFound'}",
+              "Runtime" : "python3.6",
+              "InputPayload" : {
+                "InstanceId" : "{{InstanceId}}"
+              },
+              "Handler" : "getInstanceProfileName"
+            },
+            "name" : "getExistingRoleName",
+            "action" : "aws:executeScript",
+            "nextStep" : "branchIfProfileExists"
+          }, {
+            "inputs" : {
+              "Choices" : [ {
+                "StringEquals" : "NoRoleFound",
+                "Variable" : "{{getExistingRoleName.existingInstanceProfileRoleName}}",
+                "NextStep" : "createRoleIfNotExists"
+              } ],
+              "Default" : "checkIfPolicyAttachAllowed"
+            },
+            "name" : "branchIfProfileExists",
+            "action" : "aws:branch"
+          }, {
+            "inputs" : {
+              "Choices" : [ {
+                "StringEquals" : "true",
+                "Variable" : "{{IsPolicyAttachAllowed}}",
+                "NextStep" : "getRoleFromInstanceProfile"
+              } ],
+              "Default" : "createRoleIfNotExists"
+            },
+            "name" : "checkIfPolicyAttachAllowed",
+            "action" : "aws:branch"
+          }, {
+            "outputs" : [ {
+              "Type" : "String",
+              "Name" : "existingRoleName",
+              "Selector" : "$.InstanceProfile.Roles[0].RoleName"
+            } ],
+            "inputs" : {
+              "InstanceProfileName" : "{{getExistingRoleName.existingInstanceProfileRoleName}}",
+              "Service" : "iam",
+              "Api" : "GetInstanceProfile"
+            },
+            "name" : "getRoleFromInstanceProfile",
+            "action" : "aws:executeAwsApi",
+            "nextStep" : "attachAmazonSSMManagedInstanceCoreToExistingRole"
+          }, {
+            "inputs" : {
+              "RoleName" : "{{getRoleFromInstanceProfile.existingRoleName}}",
+              "PolicyArn" : "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+              "Service" : "iam",
+              "Api" : "AttachRolePolicy"
+            },
+            "name" : "attachAmazonSSMManagedInstanceCoreToExistingRole",
+            "action" : "aws:executeAwsApi",
+            "nextStep" : "attachAmazonSSMPatchAssociationToExistingRole"
+          }, {
+            "inputs" : {
+              "RoleName" : "{{getRoleFromInstanceProfile.existingRoleName}}",
+              "PolicyArn" : "arn:aws:iam::aws:policy/AmazonSSMPatchAssociation",
+              "Service" : "iam",
+              "Api" : "AttachRolePolicy"
+            },
+            "name" : "attachAmazonSSMPatchAssociationToExistingRole",
+            "action" : "aws:executeAwsApi",
+            "isEnd" : true
+          }, {
+            "inputs" : {
+              "Path" : "/",
+              "RoleName" : "${IAMRole2}",
+              "Description" : "EC2 role for SSM for Quick-Setup",
+              "AssumeRolePolicyDocument" : "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ec2.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}",
+              "Service" : "iam",
+              "Api" : "CreateRole"
+            },
+            "name" : "createRoleIfNotExists",
+            "action" : "aws:executeAwsApi",
+            "description" : "Create ${IAMRole2} Role For SSM Quick Setup",
+            "onFailure" : "Continue",
+            "nextStep" : "assertRoleForInstanceProfileExists"
+          }, {
+            "inputs" : {
+              "PropertySelector" : "$.Role.RoleName",
+              "RoleName" : "${IAMRole2}",
+              "DesiredValues" : [ "${IAMRole2}" ],
+              "Service" : "iam",
+              "Api" : "GetRole"
+            },
+            "name" : "assertRoleForInstanceProfileExists",
+            "action" : "aws:assertAwsResourceProperty",
+            "nextStep" : "attachAmazonSSMManagedInstanceCoreToRole"
+          }, {
+            "inputs" : {
+              "RoleName" : "${IAMRole2}",
+              "PolicyArn" : "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+              "Service" : "iam",
+              "Api" : "AttachRolePolicy"
+            },
+            "name" : "attachAmazonSSMManagedInstanceCoreToRole",
+            "action" : "aws:executeAwsApi",
+            "nextStep" : "attachAmazonSSMPatchAssociationToRole"
+          }, {
+            "inputs" : {
+              "RoleName" : "${IAMRole2}",
+              "PolicyArn" : "arn:aws:iam::aws:policy/AmazonSSMPatchAssociation",
+              "Service" : "iam",
+              "Api" : "AttachRolePolicy"
+            },
+            "name" : "attachAmazonSSMPatchAssociationToRole",
+            "action" : "aws:executeAwsApi",
+            "nextStep" : "createInstanceProfileIfNotExists"
+          }, {
+            "inputs" : {
+              "InstanceProfileName" : "${IAMRole2}",
+              "Service" : "iam",
+              "Api" : "CreateInstanceProfile"
+            },
+            "name" : "createInstanceProfileIfNotExists",
+            "action" : "aws:executeAwsApi",
+            "onFailure" : "Continue",
+            "nextStep" : "addRoleToInstanceProfile"
+          }, {
+            "inputs" : {
+              "RoleName" : "${IAMRole2}",
+              "InstanceProfileName" : "${IAMRole2}",
+              "Service" : "iam",
+              "Api" : "AddRoleToInstanceProfile"
+            },
+            "name" : "addRoleToInstanceProfile",
+            "action" : "aws:executeAwsApi",
+            "onFailure" : "Continue",
+            "nextStep" : "executeAttachIAMToInstance"
+          }, {
+            "maxAttempts" : 10,
+            "inputs" : {
+              "RuntimeParameters" : {
+                "AutomationAssumeRole" : "{{ AutomationAssumeRole }}",
+                "RoleName" : "${IAMRole2}",
+                "InstanceId" : "{{ InstanceId }}",
+                "ForceReplace" : false
+              },
+              "DocumentName" : "AWS-AttachIAMToInstance"
+            },
+            "name" : "executeAttachIAMToInstance",
+            "action" : "aws:executeAutomation",
+            "timeoutSeconds" : 60,
+            "isEnd" : true
+          } ]
+        }
+      DocumentType: "Automation"
+      Tags:
+        - Key: "QuickSetupID"
+          Value: "yoogl"
+        - Key: "QuickSetupType"
+          Value: "Host Management"
+        - Key: "QuickSetupVersion"
+          Value: "2.0"
+
+  SSMDocument2:
+    Type: "AWS::SSM::Document"
+    Properties:
+      Name: "AWSQuickSetup-UpdateExistingInstanceProfile-yoogl"
+      Content: |
+        {
+          "schemaVersion" : "0.3",
+          "description" : "Composite document for Quick Setup Managing Instances association. This document updates the user provided instance profile with roles and policies",
+          "assumeRole" : "{{AutomationAssumeRole}}",
+          "parameters" : {
+            "AutomationAssumeRole" : {
+              "type" : "String"
+            },
+            "InstanceId" : {
+              "type" : "String"
+            },
+            "InstanceProfile" : {
+              "type" : "String"
+            }
+          },
+          "mainSteps" : [ {
+            "outputs" : [ {
+              "Type" : "String",
+              "Name" : "existingRoleName",
+              "Selector" : "$.InstanceProfile.Roles[0].RoleName"
+            } ],
+            "inputs" : {
+              "InstanceProfileName" : "{{InstanceProfile}}",
+              "Service" : "iam",
+              "Api" : "GetInstanceProfile"
+            },
+            "name" : "getRoleFromInstanceProfile",
+            "action" : "aws:executeAwsApi",
+            "nextStep" : "attachAmazonSSMManagedInstanceCoreToExistingRole"
+          }, {
+            "inputs" : {
+              "RoleName" : "{{getRoleFromInstanceProfile.existingRoleName}}",
+              "PolicyArn" : "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+              "Service" : "iam",
+              "Api" : "AttachRolePolicy"
+            },
+            "name" : "attachAmazonSSMManagedInstanceCoreToExistingRole",
+            "action" : "aws:executeAwsApi",
+            "nextStep" : "attachAmazonSSMPatchAssociationToExistingRole"
+          }, {
+            "inputs" : {
+              "RoleName" : "{{getRoleFromInstanceProfile.existingRoleName}}",
+              "PolicyArn" : "arn:aws:iam::aws:policy/AmazonSSMPatchAssociation",
+              "Service" : "iam",
+              "Api" : "AttachRolePolicy"
+            },
+            "name" : "attachAmazonSSMPatchAssociationToExistingRole",
+            "action" : "aws:executeAwsApi",
+            "isEnd" : true
+          } ]
+        }
+      DocumentType: "Automation"
+      Tags:
+        - Key: "QuickSetupID"
+          Value: "yoogl"
+        - Key: "QuickSetupType"
+          Value: "Host Management"
+        - Key: "QuickSetupVersion"
+          Value: "2.0"
+
+  SSMDocument3:
+    Type: "AWS::SSM::Document"
+    Properties:
+      Name: "SSM-SessionManagerRunShell"
+      Content: !Sub "{\"schemaVersion\":\"1.0\",\"description\":\"Document to hold regional settings for Session Manager\",\"sessionType\":\"Standard_Stream\",\"inputs\":{\"s3BucketName\":\"\",\"s3KeyPrefix\":\"\",\"s3EncryptionEnabled\":true,\"cloudWatchLogGroupName\":\"\",\"cloudWatchEncryptionEnabled\":true,\"idleSessionTimeout\":\"60\",\"maxSessionDuration\":\"180\",\"cloudWatchStre${IAMPolicy12}ngEnabled\":true,\"kmsKeyId\":\"\",\"runAsEnabled\":false,\"runAsDefaultUser\":\"\",\"shellProfile\":{\"windows\":\"\",\"linux\":\"\"}}}"
+      DocumentType: "Session"
+
+  SSMParameter:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: "service-catalog-puppet-spoke-version"
+      Type: "SecureString"
+      Value: "AQICAHiLfw1m99SW3BLwreBcsfIWxWht+q+P1Z8cU9j388N42QHR/ymKrtTIURUjW0ENGpNkAAAAZTBjBgkqhkiG9w0BBwagVjBUAgEAME8GCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMLrG7YKSdv+8sdCQTAgEQgCKMj8pIzWY91irvBULGhr5vUiIZO48bapXvdLD5ySi1L6+s"
+      DataType: "text"
+      Tier: "Standard"
+
+  SSMAssociation:
+    Type: "AWS::SSM::Association"
+    Properties:
+      Name: "AWS-EnableExplorer"
+      DocumentVersion: "$DEFAULT"
+      Parameters:
+        AutomationAssumeRole:
+          - !Sub "arn:aws:iam::${EC2PrefixList.OwnerId}:role/${IAMRole5}"
+      AssociationName: "AWS-QuickSetup-SSMHostMgmt-EnableExplorer-yoogl"
+      Targets:
+        - Key: "aws:NoOpAutomationTag"
+          Values:
+            - "AWS-NoOpAutomationTarget-Value"
+
+  SSMAssociation2:
+    Type: "AWS::SSM::Association"
+    Properties:
+      Name: "AWS-ConfigureAWSPackage"
+      DocumentVersion: "$DEFAULT"
+      Parameters:
+        action:
+          - "Install"
+        additionalArguments:
+          - "{}"
+        installationType:
+          - "Uninstall and reinstall"
+        name:
+          - !Sub "arn:aws:ssm:${AWS::Region}:117106523360:document/MaxarSecurityAgentCrowdStrike"
+      ScheduleExpression: "rate(24 hours)"
+      AssociationName: !Sub "mxr-governance-${AWS::Region}-crowdstrike-installation"
+      Targets:
+        - Key: "tag:InstallCrowdstrikeAgent"
+          Values:
+            - "true"
+
+  SSMAssociation3:
+    Type: "AWS::SSM::Association"
+    Properties:
+      Name: "AWSQuickSetup-CreateAndAttachIAMToInstance-yoogl"
+      DocumentVersion: "$DEFAULT"
+      Parameters:
+        AutomationAssumeRole:
+          - !Sub "arn:aws:iam::${EC2PrefixList.OwnerId}:role/${IAMRole5}"
+        IsPolicyAttachAllowed:
+          - "false"
+      ScheduleExpression: "rate(30 days)"
+      AssociationName: "AWS-QuickSetup-SSMHostMgmt-AttachIAMToInstance-yoogl"
+      Targets:
+        - Key: "InstanceIds"
+          Values:
+            - "*"
+
+  SSMAssociation4:
+    Type: "AWS::SSM::Association"
+    Properties:
+      Name: "AWS-UpdateSSMAgent"
+      DocumentVersion: "$DEFAULT"
+      ScheduleExpression: "rate(14 days)"
+      AssociationName: "AWS-QuickSetup-SSMHostMgmt-UpdateSSMAgent-yoogl"
+      Targets:
+        - Key: "InstanceIds"
+          Values:
+            - "*"
+
+  SSMAssociation5:
+    Type: "AWS::SSM::Association"
+    Properties:
+      Name: "AWS-RunPatchBaselineAssociation"
+      DocumentVersion: "$DEFAULT"
+      Parameters:
+        AssociationId:
+          - "aef916c9-bb38-426b-b1b4-340bc834cf30"
+        Operation:
+          - "Scan"
+      ScheduleExpression: "rate(1 day)"
+      AssociationName: "AWS-QuickSetup-SSMHostMgmt-ScanForPatches-yoogl"
+      Targets:
+        - Key: "InstanceIds"
+          Values:
+            - "*"
+
+  SSMAssociation6:
+    Type: "AWS::SSM::Association"
+    Properties:
+      Name: "AWS-GatherSoftwareInventory"
+      DocumentVersion: "$DEFAULT"
+      Parameters:
+        applications:
+          - "Enabled"
+        awsComponents:
+          - "Enabled"
+        customInventory:
+          - "Enabled"
+        instanceDetailedInformation:
+          - "Enabled"
+        networkConfig:
+          - "Enabled"
+        services:
+          - "Enabled"
+        windowsRoles:
+          - "Enabled"
+        windowsUpdates:
+          - "Enabled"
+      ScheduleExpression: "rate(30 minutes)"
+      AssociationName: "AWS-QuickSetup-SSMHostMgmt-CollectInventory-yoogl"
+      Targets:
+        - Key: "InstanceIds"
+          Values:
+            - "*"

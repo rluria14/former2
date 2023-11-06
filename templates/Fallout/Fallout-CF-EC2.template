@@ -1,0 +1,247 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "EC2 Instances"
+Parameters:
+  AvailabilityZone:
+    Description: Name of availibility zone
+    Type: String
+    Default: us-east-1
+Resources:
+    EC2Instance:
+        Type: "AWS::EC2::Instance"
+        Properties:
+            ImageId: !Sub "${IAMPolicy12}-0f5d994f1d45d2f38"
+            InstanceType: "t3.small"
+            KeyName: "fallout-bastion"
+            AvailabilityZone: !Ref AvailabilityZone
+            Tenancy: !Ref ECSCluster2
+            SubnetId: !Ref EC2Subnet
+            EbsOptimized: false
+            SecurityGroupIds:
+              - !Ref EC2SecurityGroup9
+            SourceDestCheck: true
+            BlockDeviceMappings:
+              -
+                DeviceName: "/dev/xvda"
+                Ebs:
+                    Encrypted: true
+                    VolumeSize: 30
+                    SnapshotId: "snap-0eefdff72caf04c7d"
+                    VolumeType: "gp2"
+                    DeleteOnTermination: true
+            IamInstanceProfile: !Ref IAMRole14
+            Tags:
+              -
+                Key: "InstallCrowdstrikeAgent"
+                Value: "True"
+              -
+                Key: "Name"
+                Value: !Sub "${ElasticLoadBalancingV2TargetGroup5.TargetGroupName}1"
+              -
+                Key: "TG"
+                Value: !GetAtt ElasticLoadBalancingV2TargetGroup5.TargetGroupName
+            HibernationOptions:
+                Configured: false
+            CpuOptions:
+                CoreCount: 1
+                ThreadsPerCore: 2
+            EnclaveOptions:
+                Enabled: false
+
+    EC2Instance2:
+        Type: "AWS::EC2::Instance"
+        Properties:
+            ImageId: !Sub "${IAMPolicy12}-0f5d994f1d45d2f38"
+            InstanceType: "t3.small"
+            KeyName: "fallout-bastion"
+            AvailabilityZone: !GetAtt EC2Instance.AvailabilityZone
+            Tenancy: !Ref ECSCluster2
+            SubnetId: !Ref EC2Subnet
+            EbsOptimized: false
+            SecurityGroupIds:
+              - !Ref EC2SecurityGroup9
+            SourceDestCheck: true
+            BlockDeviceMappings:
+              -
+                DeviceName: "/dev/xvda"
+                Ebs:
+                    Encrypted: true
+                    VolumeSize: 30
+                    SnapshotId: "snap-0eefdff72caf04c7d"
+                    VolumeType: "gp2"
+                    DeleteOnTermination: true
+            IamInstanceProfile: !Ref IAMRole14
+            Tags:
+              -
+                Key: "InstallCrowdstrikeAgent"
+                Value: "True"
+              -
+                Key: "Name"
+                Value: !Sub "${ElasticLoadBalancingV2TargetGroup8.TargetGroupName}1"
+              -
+                Key: "TG"
+                Value: !GetAtt ElasticLoadBalancingV2TargetGroup8.TargetGroupName
+            HibernationOptions:
+                Configured: false
+            CpuOptions:
+                CoreCount: 1
+                ThreadsPerCore: 2
+            EnclaveOptions:
+                Enabled: false
+
+    EC2Instance3:
+        Type: "AWS::EC2::Instance"
+        Properties:
+            ImageId: !Sub "${IAMPolicy12}-01dea095ddb844e42"
+            InstanceType: "t3.small"
+            KeyName: "fallout-bastion"
+            AvailabilityZone: !GetAtt EC2Instance.AvailabilityZone
+            Tenancy: !Ref ECSCluster2
+            SubnetId: !Ref EC2Subnet
+            EbsOptimized: false
+            SecurityGroupIds:
+              - !Ref EC2SecurityGroup9
+            SourceDestCheck: true
+            BlockDeviceMappings:
+              -
+                DeviceName: "/dev/xvda"
+                Ebs:
+                    Encrypted: true
+                    VolumeSize: 30
+                    SnapshotId: "snap-0fa782948ed9b1e59"
+                    VolumeType: "gp2"
+                    DeleteOnTermination: true
+            IamInstanceProfile: !Ref IAMRole14
+            Tags:
+              -
+                Key: "Name"
+                Value: !Sub "${ElasticLoadBalancingV2TargetGroup3.TargetGroupName}1"
+              -
+                Key: "TG"
+                Value: !GetAtt ElasticLoadBalancingV2TargetGroup3.TargetGroupName
+              -
+                Key: "InstallCrowdstrikeAgent"
+                Value: "True"
+            HibernationOptions:
+                Configured: false
+            CpuOptions:
+                CoreCount: 1
+                ThreadsPerCore: 2
+            EnclaveOptions:
+                Enabled: false
+
+    EC2Instance4:
+        Type: "AWS::EC2::Instance"
+        Properties:
+            ImageId: !Sub "${IAMPolicy12}-04581fbf744a7d11f"
+            InstanceType: "t3.small"
+            KeyName: "fallout-bastion"
+            AvailabilityZone: !GetAtt EC2Instance.AvailabilityZone
+            Tenancy: !Ref ECSCluster2
+            SubnetId: !Ref EC2Subnet
+            EbsOptimized: false
+            SecurityGroupIds:
+              - !Ref EC2SecurityGroup9
+            SourceDestCheck: true
+            BlockDeviceMappings:
+              -
+                DeviceName: "/dev/xvda"
+                Ebs:
+                    Encrypted: true
+                    VolumeSize: 30
+                    SnapshotId: "snap-07964ba64a11eca92"
+                    VolumeType: "gp2"
+                    DeleteOnTermination: true
+            IamInstanceProfile: !Ref IAMRole14
+            Tags:
+              -
+                Key: "Name"
+                Value: "dagobah1"
+            HibernationOptions:
+                Configured: false
+            CpuOptions:
+                CoreCount: 1
+                ThreadsPerCore: 2
+            EnclaveOptions:
+                Enabled: false
+
+    EC2Instance5:
+        Type: "AWS::EC2::Instance"
+        Properties:
+            ImageId: !Sub "${IAMPolicy12}-01dea095ddb844e42"
+            InstanceType: "t3.small"
+            KeyName: "fallout-bastion"
+            AvailabilityZone: !GetAtt EC2Instance.AvailabilityZone
+            Tenancy: !Ref ECSCluster2
+            SubnetId: !Ref EC2Subnet
+            EbsOptimized: false
+            SecurityGroupIds:
+              - !Ref EC2SecurityGroup9
+            SourceDestCheck: true
+            BlockDeviceMappings:
+              -
+                DeviceName: "/dev/xvda"
+                Ebs:
+                    Encrypted: true
+                    VolumeSize: 30
+                    SnapshotId: "snap-0fa782948ed9b1e59"
+                    VolumeType: "gp2"
+                    DeleteOnTermination: true
+            IamInstanceProfile: !Ref IAMRole14
+            Tags:
+              -
+                Key: "InstallCrowdstrikeAgent"
+                Value: "True"
+              -
+                Key: "TG"
+                Value: !Sub "${ElasticLoadBalancingV2TargetGroup8.TargetGroupName}-tcp"
+              -
+                Key: "Name"
+                Value: !Sub "${ElasticLoadBalancingV2TargetGroup8.TargetGroupName}-tcp1"
+            HibernationOptions:
+                Configured: false
+            CpuOptions:
+                CoreCount: 1
+                ThreadsPerCore: 2
+            EnclaveOptions:
+                Enabled: false
+
+    EC2Instance6:
+        Type: "AWS::EC2::Instance"
+        Properties:
+            ImageId: !Sub "${IAMPolicy12}-0f5d994f1d45d2f38"
+            InstanceType: "t3.small"
+            KeyName: "fallout-bastion"
+            AvailabilityZone: !GetAtt EC2Instance.AvailabilityZone
+            Tenancy: !Ref ECSCluster2
+            SubnetId: !Ref EC2Subnet
+            EbsOptimized: false
+            SecurityGroupIds:
+              - !Ref EC2SecurityGroup9
+            SourceDestCheck: true
+            BlockDeviceMappings:
+              -
+                DeviceName: "/dev/xvda"
+                Ebs:
+                    Encrypted: true
+                    VolumeSize: 30
+                    SnapshotId: "snap-0eefdff72caf04c7d"
+                    VolumeType: "gp2"
+                    DeleteOnTermination: true
+            IamInstanceProfile: !Ref IAMRole14
+            Tags:
+              -
+                Key: "InstallCrowdstrikeAgent"
+                Value: "True"
+              -
+                Key: "Name"
+                Value: !Sub "${S3Bucket17}1"
+              -
+                Key: "TG"
+                Value: !Sub "${S3Bucket17}-flower"
+            HibernationOptions:
+                Configured: false
+            CpuOptions:
+                CoreCount: 1
+                ThreadsPerCore: 2
+            EnclaveOptions:
+                Enabled: false

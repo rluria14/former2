@@ -1,0 +1,2351 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "EC2 Instances"
+Parameters:
+  AvailabilityZone:
+    Description: Name of availibility zone
+    Type: String
+    Default: us-east-1
+Resources:
+  LogsLogGroup:
+    Type: "AWS::Logs::LogGroup"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/error"
+
+  LogsLogGroup2:
+    Type: "AWS::Logs::LogGroup"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/logs-v2"
+
+  LogsLogGroup3:
+    Type: "AWS::Logs::LogGroup"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/output"
+      RetentionInDays: 7
+
+  LogsLogGroup4:
+    Type: "AWS::Logs::LogGroup"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      RetentionInDays: 1
+
+  LogsLogGroup5:
+    Type: "AWS::Logs::LogGroup"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      RetentionInDays: 1
+
+  LogsLogGroup6:
+    Type: "AWS::Logs::LogGroup"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/SC-${EC2PrefixList.OwnerId}-pp-3rqnau-DefaultVpcDeletionFuncti-NObVQMtp1DLE"
+      RetentionInDays: 90
+
+  LogsLogGroup7:
+    Type: "AWS::Logs::LogGroup"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+
+  LogsLogGroup8:
+    Type: "AWS::Logs::LogGroup"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+
+  LogsLogGroup9:
+    Type: "AWS::Logs::LogGroup"
+    Properties:
+      LogGroupName: "RDSOSMetrics"
+      RetentionInDays: 30
+
+  LogsLogGroup10:
+    Type: "AWS::Logs::LogGroup"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      RetentionInDays: 731
+
+  LogsLogGroup11:
+    Type: "AWS::Logs::LogGroup"
+    Properties:
+      LogGroupName: "fallout-logs"
+
+  LogsLogGroup12:
+    Type: "AWS::Logs::LogGroup"
+    Properties:
+      LogGroupName: "log-factrac-api"
+
+  LogsLogGroup13:
+    Type: "AWS::Logs::LogGroup"
+    Properties:
+      LogGroupName: "log-factrac-ui"
+
+  LogsLogGroup14:
+    Type: "AWS::Logs::LogGroup"
+    Properties:
+      LogGroupName: "log-pipeline"
+
+  LogsLogGroup15:
+    Type: "AWS::Logs::LogGroup"
+    Properties:
+      LogGroupName: !Sub "mxr-governance-global-cloudtrail-${EC2PrefixList.OwnerId}-logs"
+      RetentionInDays: 90
+
+  LogsLogStream:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/error"
+      LogStreamName: "jr_2b08b207256b5d4cb67460e6b888cb561b2f45f69fe9897af5bfeddaf1e67296"
+
+  LogsLogStream2:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/error"
+      LogStreamName: "jr_2b08b207256b5d4cb67460e6b888cb561b2f45f69fe9897af5bfeddaf1e67296_g-0ac0f4eb5cafcb966ddc4e7f9783d81d13ff49b7"
+
+  LogsLogStream3:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/error"
+      LogStreamName: "jr_2b08b207256b5d4cb67460e6b888cb561b2f45f69fe9897af5bfeddaf1e67296_g-76b58e2b7bb4b7db1d2be6999cd211278685f1f0"
+
+  LogsLogStream4:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/error"
+      LogStreamName: "jr_2b08b207256b5d4cb67460e6b888cb561b2f45f69fe9897af5bfeddaf1e67296_g-a1ef7b19c8b23d6bb9a87d9883adc96f45b6b273"
+
+  LogsLogStream5:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/error"
+      LogStreamName: "jr_2b08b207256b5d4cb67460e6b888cb561b2f45f69fe9897af5bfeddaf1e67296_g-bb328e5f7469d480311249a03509c30331caf979"
+
+  LogsLogStream6:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/error"
+      LogStreamName: "jr_2b08b207256b5d4cb67460e6b888cb561b2f45f69fe9897af5bfeddaf1e67296_g-de948e4d9e98368f99730118c663da80b1730415"
+
+  LogsLogStream7:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/error"
+      LogStreamName: "jr_2b08b207256b5d4cb67460e6b888cb561b2f45f69fe9897af5bfeddaf1e67296_g-deaf7b4fd7bcfb75af4324beeadbacae4e27db03"
+
+  LogsLogStream8:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/error"
+      LogStreamName: "jr_2b08b207256b5d4cb67460e6b888cb561b2f45f69fe9897af5bfeddaf1e67296_g-ed50904629e154cc96ac7125ab22ebfcf438a494"
+
+  LogsLogStream9:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/error"
+      LogStreamName: "jr_2b08b207256b5d4cb67460e6b888cb561b2f45f69fe9897af5bfeddaf1e67296_g-fb7eef6b3622775e238ca611e73b4368a08701e2"
+
+  LogsLogStream10:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/error"
+      LogStreamName: "jr_2b08b207256b5d4cb67460e6b888cb561b2f45f69fe9897af5bfeddaf1e67296_g-fd9e7d8e815d57e5c3ae53f6b6e0a9dfa8445e30"
+
+  LogsLogStream11:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/error"
+      LogStreamName: "jr_3584dcd559a36f049858a482d6e228a5dd18376207f808ee87ab018184322d72"
+
+  LogsLogStream12:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/error"
+      LogStreamName: "jr_4fa798bbef076848561d319c3bb618f85edffba6f9dfe45ac0a71d5c87c7ff82"
+
+  LogsLogStream13:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/error"
+      LogStreamName: "jr_4fa798bbef076848561d319c3bb618f85edffba6f9dfe45ac0a71d5c87c7ff82_g-5810f5d408900fb4f3c96183ec13c47d06029ed5"
+
+  LogsLogStream14:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/error"
+      LogStreamName: "jr_4fa798bbef076848561d319c3bb618f85edffba6f9dfe45ac0a71d5c87c7ff82_g-5b72afdf2111fcc847addc7577ef6a36d4ec7ad9"
+
+  LogsLogStream15:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/error"
+      LogStreamName: "jr_4fa798bbef076848561d319c3bb618f85edffba6f9dfe45ac0a71d5c87c7ff82_g-663851899f3c75e50271ce01229e52c4a4c598f7"
+
+  LogsLogStream16:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/error"
+      LogStreamName: "jr_4fa798bbef076848561d319c3bb618f85edffba6f9dfe45ac0a71d5c87c7ff82_g-7bacb41377fcf106f7ea800a9dd52c0f41f72f21"
+
+  LogsLogStream17:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/error"
+      LogStreamName: "jr_4fa798bbef076848561d319c3bb618f85edffba6f9dfe45ac0a71d5c87c7ff82_g-8f56fb14fb57c44c4802e3fa94df64cb0779cf91"
+
+  LogsLogStream18:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/error"
+      LogStreamName: "jr_4fa798bbef076848561d319c3bb618f85edffba6f9dfe45ac0a71d5c87c7ff82_g-b825e717b999b45c35c0568b1fd26002813ff6e3"
+
+  LogsLogStream19:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/error"
+      LogStreamName: "jr_4fa798bbef076848561d319c3bb618f85edffba6f9dfe45ac0a71d5c87c7ff82_g-c7d5192d4416d0e9e20f748d3ce18b5dd88c4f57"
+
+  LogsLogStream20:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/error"
+      LogStreamName: "jr_4fa798bbef076848561d319c3bb618f85edffba6f9dfe45ac0a71d5c87c7ff82_g-e62f0ab0f9372bc07e589ada2843d812f524cf2f"
+
+  LogsLogStream21:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/error"
+      LogStreamName: "jr_4fa798bbef076848561d319c3bb618f85edffba6f9dfe45ac0a71d5c87c7ff82_g-f18aa4abe279609b022462e930af716312e3d4f4"
+
+  LogsLogStream22:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/error"
+      LogStreamName: "jr_67bf2c6e8dc62c23ce68d5bcbd146bf60628c465906a34402dfdf50f0aa5ce45"
+
+  LogsLogStream23:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/logs-v2"
+      LogStreamName: "-null"
+
+  LogsLogStream24:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/logs-v2"
+      LogStreamName: "jr_2b08b207256b5d4cb67460e6b888cb561b2f45f69fe9897af5bfeddaf1e67296-driver"
+
+  LogsLogStream25:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws-glue/jobs/logs-v2"
+      LogStreamName: "jr_4fa798bbef076848561d319c3bb618f85edffba6f9dfe45ac0a71d5c87c7ff82-driver"
+
+  LogsLogStream26:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-0860de070afc453a8797f75d1b87d124"
+
+  LogsLogStream27:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-1a4d568c370445e2871f85eb256c819e"
+
+  LogsLogStream28:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-1f24cac220a54af3b90c013af36ab59c"
+
+  LogsLogStream29:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-31dfa82ba0344566b996742632d75867"
+
+  LogsLogStream30:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-39f25d1ac01e466b9466936835d5dac4"
+
+  LogsLogStream31:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-3bce57f105894e5bb9affcbc7f81d834"
+
+  LogsLogStream32:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-451e3b689a644e338ef628c6e9a429cc"
+
+  LogsLogStream33:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-4b3c64c36b57498bb46d4c1f518f40c7"
+
+  LogsLogStream34:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-558df0ef3d1248c29ebf5208d54a4162"
+
+  LogsLogStream35:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-57b00c345b13424690af6a7ad7d50a0d"
+
+  LogsLogStream36:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-5d8a09a08c354ef0b25b8b48cd5d23cd"
+
+  LogsLogStream37:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-60b4b591e48046f49c60af01a0336c33"
+
+  LogsLogStream38:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-62a7fc1a1d624b0aa463c3ea060675c8"
+
+  LogsLogStream39:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-65a9904700624900b5ffc83c58a3b2cb"
+
+  LogsLogStream40:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-66769c8cbdd043ccbdba6d59712bdd57"
+
+  LogsLogStream41:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-66a40116a91a491a946813b7799171c7"
+
+  LogsLogStream42:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-69556490d3b34a678b8770f9c53c32b7"
+
+  LogsLogStream43:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-6e0f437336374a25ae690cc8b390b638"
+
+  LogsLogStream44:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-7556136fdd7f4200bd678fa35e896fa4"
+
+  LogsLogStream45:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-7633ff7c44b144efac2703b459c4963e"
+
+  LogsLogStream46:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-77e1465711a142719e8f30f12393557b"
+
+  LogsLogStream47:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-868942a60b61430db9a6d7bad1a87390"
+
+  LogsLogStream48:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-89dcc52dafb0429a83053fe5e6129d78"
+
+  LogsLogStream49:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-9289d250b22540a7a9d7ced99750db04"
+
+  LogsLogStream50:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-9675000531d44432860c43ba85b53d5b"
+
+  LogsLogStream51:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-98a265d6765b437a9b7b398044825ef2"
+
+  LogsLogStream52:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-9f48ce4748bf422a86785af2b38edb04"
+
+  LogsLogStream53:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-a12f07bf2d974102ae5fbadb15bad63a"
+
+  LogsLogStream54:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-bb45c39154654ef7b3bc9b3f39fbd732"
+
+  LogsLogStream55:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-c4455e0b48c047e9a8d969210d9e6068"
+
+  LogsLogStream56:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-cadc305445644280a21f78cb607f38cf"
+
+  LogsLogStream57:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-cba5bf66f096471685db418f138e2d11"
+
+  LogsLogStream58:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-d1bdda5c053e4a70a5248c60fee7f631"
+
+  LogsLogStream59:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-d22a6aeb1e784604bea86558d2c16ba0"
+
+  LogsLogStream60:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-d2fdd129be5d4c15adf4e9b5a23e9510"
+
+  LogsLogStream61:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-d7c398529ae74a5f97a6b5b4c4bca8cd"
+
+  LogsLogStream62:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-ecbbd47986ac4b22a5a0f26a9143d4f3"
+
+  LogsLogStream63:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: "AgentTelemetry-f857824127c244f292be5029264401e2"
+
+  LogsLogStream64:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: !Sub "ClusterTelemetry-${ECSCluster}"
+
+  LogsLogStream65:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: !Sub "ServiceTelemetry-${ECSService.Name}"
+
+  LogsLogStream66:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster}/performance"
+      LogStreamName: !Sub "ServiceTelemetry-${ElasticLoadBalancingV2TargetGroup8.TargetGroupName}-service"
+
+  LogsLogStream67:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "AgentTelemetry-243630360b474515a6f1942df17a71e6"
+
+  LogsLogStream68:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: !Sub "ClusterTelemetry-${ECSCluster4}"
+
+  LogsLogStream69:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-1028"
+
+  LogsLogStream70:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-1039"
+
+  LogsLogStream71:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-1044"
+
+  LogsLogStream72:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-1061"
+
+  LogsLogStream73:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-1093"
+
+  LogsLogStream74:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-1102"
+
+  LogsLogStream75:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-1131"
+
+  LogsLogStream76:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-1147"
+
+  LogsLogStream77:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-1152"
+
+  LogsLogStream78:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-1215"
+
+  LogsLogStream79:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-1438"
+
+  LogsLogStream80:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-1461"
+
+  LogsLogStream81:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-1511"
+
+  LogsLogStream82:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-1514"
+
+  LogsLogStream83:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-1520"
+
+  LogsLogStream84:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-1915"
+
+  LogsLogStream85:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2049"
+
+  LogsLogStream86:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2054"
+
+  LogsLogStream87:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2308"
+
+  LogsLogStream88:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2345"
+
+  LogsLogStream89:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2361"
+
+  LogsLogStream90:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2403"
+
+  LogsLogStream91:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2409"
+
+  LogsLogStream92:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2412"
+
+  LogsLogStream93:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2519"
+
+  LogsLogStream94:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2559"
+
+  LogsLogStream95:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2726"
+
+  LogsLogStream96:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2747"
+
+  LogsLogStream97:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2748"
+
+  LogsLogStream98:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2760"
+
+  LogsLogStream99:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2765"
+
+  LogsLogStream100:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2777"
+
+  LogsLogStream101:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2798"
+
+  LogsLogStream102:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2802"
+
+  LogsLogStream103:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2803"
+
+  LogsLogStream104:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2827"
+
+  LogsLogStream105:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2850"
+
+  LogsLogStream106:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2862"
+
+  LogsLogStream107:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2870"
+
+  LogsLogStream108:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2879"
+
+  LogsLogStream109:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-2899"
+
+  LogsLogStream110:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-3105"
+
+  LogsLogStream111:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-3136"
+
+  LogsLogStream112:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-3145"
+
+  LogsLogStream113:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-3199"
+
+  LogsLogStream114:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-3211"
+
+  LogsLogStream115:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-3225"
+
+  LogsLogStream116:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/containerinsights/${ECSCluster4}/performance"
+      LogStreamName: "FargateTelemetry-3228"
+
+  LogsLogStream117:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/SC-${EC2PrefixList.OwnerId}-pp-3rqnau-DefaultVpcDeletionFuncti-NObVQMtp1DLE"
+      LogStreamName: "2021/11/02/[$LATEST]ec9b21cb80b343afab503ffc2d260c85"
+
+  LogsLogStream118:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/12/[$LATEST]4a347a63f8af4f31b23b577055c74c3f"
+
+  LogsLogStream119:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/12/[$LATEST]7abd4263ea93407fb810910d00a2e949"
+
+  LogsLogStream120:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/12/[$LATEST]80b1f1582a6b4b099d1b40cf962139b2"
+
+  LogsLogStream121:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/12/[$LATEST]98cabb44fe9d4a06a79bf8bbcea60c9f"
+
+  LogsLogStream122:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/12/[$LATEST]a0165f6f750e4c6f90feba2a4c0c3d34"
+
+  LogsLogStream123:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/12/[$LATEST]a086a9602ab548b7a1358fbf900d1cd2"
+
+  LogsLogStream124:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/12/[$LATEST]a51cb16446e04310b55fa69b140dd5c3"
+
+  LogsLogStream125:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/12/[$LATEST]b0e0fb67c64346a1997d2f3f03766f30"
+
+  LogsLogStream126:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/12/[$LATEST]c0c7485c37874669a0e40f6e6163fcaa"
+
+  LogsLogStream127:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/12/[$LATEST]cf644f408c394baaa5a15331fdfc7cf0"
+
+  LogsLogStream128:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/13/[$LATEST]02506ad4a39c4caa9bc675fa7a7258ef"
+
+  LogsLogStream129:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/13/[$LATEST]0571e0fa7977445cbe85462438bd6b08"
+
+  LogsLogStream130:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/13/[$LATEST]121716e6465c446481baa5d9f8e973e2"
+
+  LogsLogStream131:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/13/[$LATEST]665d656ab6554f15bdab90adb86aa2bc"
+
+  LogsLogStream132:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/13/[$LATEST]7beffd51afb741e8808f14b3fd2f4bc2"
+
+  LogsLogStream133:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/13/[$LATEST]83b1cd9c1859451f955c83432050e077"
+
+  LogsLogStream134:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/13/[$LATEST]b2688c0a20b541d2be91575d75ac0358"
+
+  LogsLogStream135:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/13/[$LATEST]b3627801cd0844b096e9ef13e9666be6"
+
+  LogsLogStream136:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/13/[$LATEST]bdab24905bba427bbec478e1f64fdd64"
+
+  LogsLogStream137:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/13/[$LATEST]d3bd810778e44d11ba662c3df04f0535"
+
+  LogsLogStream138:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/13/[$LATEST]eb203e0b820c43e599efa06032006486"
+
+  LogsLogStream139:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/13/[$LATEST]f45edf7d7f3048c397fae8204fbb55a7"
+
+  LogsLogStream140:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/13/[$LATEST]fd3ae0183871450d987d01b7d979f3c9"
+
+  LogsLogStream141:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/14/[$LATEST]0a922c3ad08744d3a86f08b8a087ca35"
+
+  LogsLogStream142:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/14/[$LATEST]152c93a6dd7c4f888c014e33817741d8"
+
+  LogsLogStream143:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/14/[$LATEST]1a4be21c2e0947e7abcfc41e03b60288"
+
+  LogsLogStream144:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/14/[$LATEST]2905cf859db2452cbf26390e9a22b785"
+
+  LogsLogStream145:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/14/[$LATEST]3d9b2a1513134f2bb64ffe04e2dbece5"
+
+  LogsLogStream146:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/14/[$LATEST]414cfee7dcaf479c9cd0889bc1439da8"
+
+  LogsLogStream147:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/14/[$LATEST]427a97aa1b4449169a4c78fdf7f4e92a"
+
+  LogsLogStream148:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/14/[$LATEST]54392015a96a4ed3833381f808b52908"
+
+  LogsLogStream149:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/14/[$LATEST]57fd598fcd37477eb44545d60e57f64b"
+
+  LogsLogStream150:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/14/[$LATEST]bbd77cb8674e4c9f846fd15390ae3ebe"
+
+  LogsLogStream151:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/14/[$LATEST]be905314ed064b2fb490c3d18e4b8930"
+
+  LogsLogStream152:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/14/[$LATEST]eba05df2ea5d42938ec5ee37c4a1f205"
+
+  LogsLogStream153:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/15/[$LATEST]155d26481a1846faa232752524be61e9"
+
+  LogsLogStream154:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/15/[$LATEST]246e465ecb074f70ad5267f1a74e97f0"
+
+  LogsLogStream155:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/15/[$LATEST]2b610a8797894fa592311f74ac861ecb"
+
+  LogsLogStream156:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/15/[$LATEST]352d89eb12964023bcc6f7ff2ab9a8aa"
+
+  LogsLogStream157:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/15/[$LATEST]373ac0e9b2bc4aaf8dbd20093ba910a4"
+
+  LogsLogStream158:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/15/[$LATEST]486b2e1ece91487e8a7e49a780a69fa9"
+
+  LogsLogStream159:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/15/[$LATEST]52ea4ab147f74c0d87d3dfe9a90a0efd"
+
+  LogsLogStream160:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/15/[$LATEST]6736a960346a46a4b50a210d4591719e"
+
+  LogsLogStream161:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/15/[$LATEST]6bccb0d28a1e4e55af6755e19f9d4827"
+
+  LogsLogStream162:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/15/[$LATEST]837a0229e57749c793b4a11d8743221a"
+
+  LogsLogStream163:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/15/[$LATEST]a3bd7e182b9640a384c073cb93c25681"
+
+  LogsLogStream164:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/15/[$LATEST]d2f45f14853b4042825d28e0977bbb56"
+
+  LogsLogStream165:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/15/[$LATEST]f58746fca461472d8adc1e37cb7fa710"
+
+  LogsLogStream166:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/16/[$LATEST]0027d81820de47b393e63cc96f990244"
+
+  LogsLogStream167:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaFunction}"
+      LogStreamName: "2022/01/16/[$LATEST]04935fc367c34db4a20b57ed23ee1bc3"
+
+  LogsLogStream168:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/AKL50-C1"
+
+  LogsLogStream169:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/AKL50-C2"
+
+  LogsLogStream170:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/AMS1-C1"
+
+  LogsLogStream171:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/AMS50-C1"
+
+  LogsLogStream172:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/AMS54-C1"
+
+  LogsLogStream173:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/ARN1-C1"
+
+  LogsLogStream174:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/ARN52-UC1"
+
+  LogsLogStream175:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/ARN52-UN1"
+
+  LogsLogStream176:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/ARN52-UO1"
+
+  LogsLogStream177:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/ARN54-C1"
+
+  LogsLogStream178:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/ATH50-C1"
+
+  LogsLogStream179:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/ATL51-C1"
+
+  LogsLogStream180:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/ATL52-C1"
+
+  LogsLogStream181:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/ATL56-C1"
+
+  LogsLogStream182:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/ATL56-C2"
+
+  LogsLogStream183:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/ATL56-C3"
+
+  LogsLogStream184:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/ATL56-C4"
+
+  LogsLogStream185:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/BAH53-C1"
+
+  LogsLogStream186:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/BKK50-C1"
+
+  LogsLogStream187:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/BKK50-C2"
+
+  LogsLogStream188:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/BLR50-C1"
+
+  LogsLogStream189:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/BLR50-C2"
+
+  LogsLogStream190:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/BLR50-C3"
+
+  LogsLogStream191:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/BOG50-C1"
+
+  LogsLogStream192:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/BOM50-C1"
+
+  LogsLogStream193:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/BOM52-C1"
+
+  LogsLogStream194:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/BOM52-UC1"
+
+  LogsLogStream195:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/BOM52-UN1"
+
+  LogsLogStream196:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/BOM52-UO1"
+
+  LogsLogStream197:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/BOM52-UU1"
+
+  LogsLogStream198:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/BOM54-UO1"
+
+  LogsLogStream199:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/BOM54-UU1"
+
+  LogsLogStream200:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/BOS50-C1"
+
+  LogsLogStream201:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/BOS50-C2"
+
+  LogsLogStream202:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/BUD50-C1"
+
+  LogsLogStream203:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/CCU50-C1"
+
+  LogsLogStream204:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/CCU50-C2"
+
+  LogsLogStream205:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/CDG3-C1"
+
+  LogsLogStream206:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/CDG3-C2"
+
+  LogsLogStream207:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/CDG50-C1"
+
+  LogsLogStream208:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/CDG50-C2"
+
+  LogsLogStream209:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/CDG53-C1"
+
+  LogsLogStream210:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/CMH50-UC1"
+
+  LogsLogStream211:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/CMH50-UN1"
+
+  LogsLogStream212:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/CMH50-UO1"
+
+  LogsLogStream213:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/CMH50-UU1"
+
+  LogsLogStream214:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/CMH51-UC1"
+
+  LogsLogStream215:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/CMH51-UN1"
+
+  LogsLogStream216:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/CMH51-UO1"
+
+  LogsLogStream217:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "/aws/route53/rapidprototypeteam.net"
+      LogStreamName: !Sub "${Route53HostedZone}/CMH51-UU1"
+
+  LogsLogStream218:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "RDSOSMetrics"
+      LogStreamName: "db-6SYKCDFRCCQILE7HAFKEZCFQ5A"
+
+  LogsLogStream219:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "RDSOSMetrics"
+      LogStreamName: "db-W56GBIVGA5LU54YCSZDP3QEQMI"
+
+  LogsLogStream220:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "RDSOSMetrics"
+      LogStreamName: "db-W56GBIVGA5LU54YCSZDP3QEQMI-secondary"
+
+  LogsLogStream221:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "RDSOSMetrics"
+      LogStreamName: "db-X3ZB4LHW2VHPJ7EJRXO5Z62ANE"
+
+  LogsLogStream222:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "RDSOSMetrics"
+      LogStreamName: "db-X3ZB4LHW2VHPJ7EJRXO5Z62ANE-secondary"
+
+  LogsLogStream223:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "fallout-logs"
+      LogStreamName: !GetAtt ElasticLoadBalancingV2TargetGroup5.TargetGroupName
+
+  LogsLogStream224:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-000023c241f32c4de-reject"
+
+  LogsLogStream225:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-0000294f2586276f3-reject"
+
+  LogsLogStream226:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-000041d33576e2227-reject"
+
+  LogsLogStream227:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-0000424361630efa0-reject"
+
+  LogsLogStream228:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-00005c633b66a40db-reject"
+
+  LogsLogStream229:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-0000687766df8df99-reject"
+
+  LogsLogStream230:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-00007cec24f8450c2-reject"
+
+  LogsLogStream231:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-00007d0a9cf618d93-reject"
+
+  LogsLogStream232:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-00008f75867bbe10a-reject"
+
+  LogsLogStream233:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-000097d2faaa62cb4-reject"
+
+  LogsLogStream234:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-0000c480dad6721c6-reject"
+
+  LogsLogStream235:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-0000c7bcf7d84db8b-reject"
+
+  LogsLogStream236:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-0000f10cbef08847c-reject"
+
+  LogsLogStream237:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-000127d06b4089118-reject"
+
+  LogsLogStream238:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-00012e22cd303a424-reject"
+
+  LogsLogStream239:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-000172dd6ef8907c5-reject"
+
+  LogsLogStream240:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-00017a7c5440343b5-reject"
+
+  LogsLogStream241:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-00017b014a8aca080-reject"
+
+  LogsLogStream242:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-000183c0fe6e67dcd-reject"
+
+  LogsLogStream243:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-0001851223301407e-reject"
+
+  LogsLogStream244:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-00018566ae3f4929a-reject"
+
+  LogsLogStream245:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-00019dabd972764be-reject"
+
+  LogsLogStream246:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-0001c9093cbd0b862-reject"
+
+  LogsLogStream247:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-0001ce5d365374018-reject"
+
+  LogsLogStream248:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-0002006ec354659f8-reject"
+
+  LogsLogStream249:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-000205065687cfa39-reject"
+
+  LogsLogStream250:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-00021344f879656a1-reject"
+
+  LogsLogStream251:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-000238d37ba3b57c3-reject"
+
+  LogsLogStream252:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-000288ab2bfbf348e-reject"
+
+  LogsLogStream253:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-0002a126c0f521601-reject"
+
+  LogsLogStream254:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-0002d9577dec04f58-reject"
+
+  LogsLogStream255:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-0002e86238c1c8050-reject"
+
+  LogsLogStream256:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-0002ebf6a84b873b1-reject"
+
+  LogsLogStream257:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-000307209caba82f3-reject"
+
+  LogsLogStream258:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-00031d201d763be6e-reject"
+
+  LogsLogStream259:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-0003383355b94cafa-reject"
+
+  LogsLogStream260:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-00034522f1f2ec091-reject"
+
+  LogsLogStream261:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-000349093920a53ad-reject"
+
+  LogsLogStream262:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-00035ab515c81875c-reject"
+
+  LogsLogStream263:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-00038779f7faea246-reject"
+
+  LogsLogStream264:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-00039efbc5cb36fa0-reject"
+
+  LogsLogStream265:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-0003ca791dd142246-reject"
+
+  LogsLogStream266:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-0003dc5424b205d99-reject"
+
+  LogsLogStream267:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-0003e3de54646d07c-reject"
+
+  LogsLogStream268:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-0003f1d0cd0b852d8-reject"
+
+  LogsLogStream269:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-0003f38f8f1463e64-reject"
+
+  LogsLogStream270:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-0003f50d7bddcb943-reject"
+
+  LogsLogStream271:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-0003f854e46b47cbb-reject"
+
+  LogsLogStream272:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-00040ece340014027-reject"
+
+  LogsLogStream273:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "dev-vpc-flow-logs"
+      LogStreamName: "eni-00043376ded15c11e-reject"
+
+  LogsLogStream274:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/0000411c367744db98f3542af4f04de9"
+
+  LogsLogStream275:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/0000bcd9dd644248bca3360eb6ecf8df"
+
+  LogsLogStream276:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/00011da23b184dbfaefcf2ddd327fbf7"
+
+  LogsLogStream277:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/00016d7520cf4dab986b8a438be018dd"
+
+  LogsLogStream278:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/00021fa4e2934111951d05d0bcfdc50a"
+
+  LogsLogStream279:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/0003913fea444c09a1c1537df64aa2d6"
+
+  LogsLogStream280:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/0004e9d9712f4a65a8f992854b3efb3e"
+
+  LogsLogStream281:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/00051976951d4f1fb12129708687c7b7"
+
+  LogsLogStream282:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/0005aaffb8c04669a0268f4bc1b8834e"
+
+  LogsLogStream283:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/0005ce3393b74ce8a0bb7c234dea4303"
+
+  LogsLogStream284:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/000619d3097147c6a4bf0156572aee11"
+
+  LogsLogStream285:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/000863cb28c84dd1a122c64375a59b81"
+
+  LogsLogStream286:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/0008a4d8a9d545d9847d6b5719dcf0dc"
+
+  LogsLogStream287:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/0008cbb7cd654814a5acf0df20306a9f"
+
+  LogsLogStream288:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/0008cbfbd35b407682a5cc6049f4bfcb"
+
+  LogsLogStream289:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/0009757a010d4866b199fe51228b938a"
+
+  LogsLogStream290:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/000abcd380bc49efb3cb1fd6a522c1fc"
+
+  LogsLogStream291:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/000b23a681bf41f08cb68d6cdde786d2"
+
+  LogsLogStream292:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/000b9e33411c4f688c7ab3cfb3e569b3"
+
+  LogsLogStream293:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/000bc98076f94a78a9ec5dae534b2f77"
+
+  LogsLogStream294:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/000bdef99dac4ec3b8e32f0e6f25d1cb"
+
+  LogsLogStream295:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/000c4a2143914be6a533d4619226227b"
+
+  LogsLogStream296:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/000cd3d25db640af930a0a2501aa46e0"
+
+  LogsLogStream297:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/000d9de1b8d548778daa7b7a5311b5db"
+
+  LogsLogStream298:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/000e2960d42d4670b0c060e97597406e"
+
+  LogsLogStream299:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/000f3f50eb40446ab5ad69ec5e940fd6"
+
+  LogsLogStream300:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/0010173bedca4239bf3555dcc02ece8a"
+
+  LogsLogStream301:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/00103d7478e74276b4a5c87dbefc535f"
+
+  LogsLogStream302:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/001076db830440e0b6906760517bc6a3"
+
+  LogsLogStream303:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/00124746b062474d9a8f9b8b8b0b2746"
+
+  LogsLogStream304:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/0013c8fbc4d44a43a59df0b97ad6e050"
+
+  LogsLogStream305:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/00149346ee184ff7a77d26fa4783e670"
+
+  LogsLogStream306:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/00158035af4e48ffa2c723bbbd1e04cf"
+
+  LogsLogStream307:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/0015f7d68db04303bb0d28ce1ada3ecc"
+
+  LogsLogStream308:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/001616880d9146f9a56fd971f6eed6ea"
+
+  LogsLogStream309:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/0016d88406d0437cbecf82f07674e6dc"
+
+  LogsLogStream310:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/0018036c25784a51bc66f05ed138e677"
+
+  LogsLogStream311:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/001823f2da63422f96e990949884cd1e"
+
+  LogsLogStream312:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/001a11097670415598f80b49b8d3b672"
+
+  LogsLogStream313:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/001abd46fe884e2aa05ba6977ebf8a66"
+
+  LogsLogStream314:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/001acac518c043ba8381319b0e4954d2"
+
+  LogsLogStream315:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/001b2f30f67c463ea847e1ed948b59d0"
+
+  LogsLogStream316:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/001ba02f60974c09a334a63730106669"
+
+  LogsLogStream317:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/001bdae223c948e6a6d8d8c9aa53d1f4"
+
+  LogsLogStream318:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/001cb5a9b18042c7b6a2e3bc76939206"
+
+  LogsLogStream319:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/001cee2a347347ce989459fd12332429"
+
+  LogsLogStream320:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/001d60ce80f74f029f93389cc6d46ebe"
+
+  LogsLogStream321:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/001e0f15e03b46c698d3f11578683859"
+
+  LogsLogStream322:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/001e12fdc9104a93b50e2fe391bb08fd"
+
+  LogsLogStream323:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-factrac-api"
+      LogStreamName: "factrac-api/factrac-container/001e13eb2ce646b4a7027c937c6e51e1"
+
+  LogsLogStream324:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/00164185ff0d499fa771e0acac92e3a0"
+
+  LogsLogStream325:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/001f9239c589403eaa5a92a0aaac27ad"
+
+  LogsLogStream326:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/00be8b3da212444bb797106bc900ed09"
+
+  LogsLogStream327:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/00dce5275f10490fa44803b65ad6eb24"
+
+  LogsLogStream328:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/00e37df2e2d34bef9b0ddabcfb6e86d6"
+
+  LogsLogStream329:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/00e54fb7d0f3461ca1fddb470ae30fb5"
+
+  LogsLogStream330:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/00ea439a1f4d47afac964cce91920805"
+
+  LogsLogStream331:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/015b516352c14f4da213bca82e2439ce"
+
+  LogsLogStream332:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/0167d197db6f4b33be4001bbae52fa50"
+
+  LogsLogStream333:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/021f698a7d8a4d0880357d636165332e"
+
+  LogsLogStream334:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/02336653451b443c929e6a2bf524bf61"
+
+  LogsLogStream335:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/02e5f3f28cf4460b8cff9013d5da6905"
+
+  LogsLogStream336:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/03d23a15a2f44b60a28901376a273972"
+
+  LogsLogStream337:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/0428fa232afb44f6b1fbca11b24d7b24"
+
+  LogsLogStream338:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/04f766d11a0f40189d8642c018627a03"
+
+  LogsLogStream339:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/04fbadf0d7b04ddd83dcf68f3117586c"
+
+  LogsLogStream340:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/04fcd198b97c497ba21a51c0c40827fa"
+
+  LogsLogStream341:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/051b8f5635834f1eb8866ed7e7580886"
+
+  LogsLogStream342:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/055874a25d3947e3848f36f93d090c7f"
+
+  LogsLogStream343:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/05fc5d60a1f44195a7a322d3253ce8a8"
+
+  LogsLogStream344:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/061a886f39ff41d79711b08abfb7a834"
+
+  LogsLogStream345:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/066ad98c813f4683923e5968d41f56a4"
+
+  LogsLogStream346:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/06b6df9bde554dd391ac246b8c941f92"
+
+  LogsLogStream347:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/06c89295d9274bc5827a6c339c8da7a4"
+
+  LogsLogStream348:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/06fa978ec417468a8adf6c6e704d42f4"
+
+  LogsLogStream349:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/07b5b03a2acb41a1931d36d660128078"
+
+  LogsLogStream350:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/07e290ee179a46ec8d7f969f21f47779"
+
+  LogsLogStream351:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/07e88409e66b49b7a818954d4c2c9895"
+
+  LogsLogStream352:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/087aead87ebe4d818da2b2182a6b1794"
+
+  LogsLogStream353:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/091093bab70146b386bae91e8d5a1f83"
+
+  LogsLogStream354:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/09db40dee47a4c1081f0ba9b18cb8fb3"
+
+  LogsLogStream355:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/0a4d72b96e23421e867d70f8e96dd912"
+
+  LogsLogStream356:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/0a59763590a54859ac0618593a94e264"
+
+  LogsLogStream357:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/0b44f4141f5147a8bea8b8b940cd7c05"
+
+  LogsLogStream358:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/0b78f78d99d44fba88bc8ca67454c22f"
+
+  LogsLogStream359:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/0bddc70c781249619ff91d952ad86df6"
+
+  LogsLogStream360:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/0be00917a9c54778bef3326fc4d18270"
+
+  LogsLogStream361:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/0bebc859b74a4a679a805a339e5eac43"
+
+  LogsLogStream362:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/0c2b2fbc00004c05aaa3187ca367ce91"
+
+  LogsLogStream363:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/0c44949c14a044f89ecfd146232f87a3"
+
+  LogsLogStream364:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/0ce91b2d5ae04f4c822a6e61f49eb5cb"
+
+  LogsLogStream365:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/0cf034bbeb6245c8bc37cece7f4f13a2"
+
+  LogsLogStream366:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/0d0d14bbfda64d638eba5e2a4ddcf40d"
+
+  LogsLogStream367:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/0d6e7457558b48ceb779e0c215646b09"
+
+  LogsLogStream368:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/0d7e6968b36b4132a5ba5d858909ce82"
+
+  LogsLogStream369:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/0d94bc3db0ac4abcbeba3c540562e15d"
+
+  LogsLogStream370:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/0dc94fbc0df74f9ea53e5a9f2b699cff"
+
+  LogsLogStream371:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/0e0a368a37a14ef0a907c8f2a855af49"
+
+  LogsLogStream372:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/0e3cfe4af8f74a4cac2f28414a2e8d4b"
+
+  LogsLogStream373:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: "log-pipeline"
+      LogStreamName: !Sub "${ECSService7.Name}/${ECSService7.Name}/0e931364b3194a4da69162221a3b7953"
+
+  LogsLogStream374:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "mxr-governance-global-cloudtrail-${EC2PrefixList.OwnerId}-logs"
+      LogStreamName: !Sub "${EC2PrefixList.OwnerId}_CloudTrail_${AWS::Region}"
+
+  LogsLogStream375:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "mxr-governance-global-cloudtrail-${EC2PrefixList.OwnerId}-logs"
+      LogStreamName: !Sub "${EC2PrefixList.OwnerId}_CloudTrail_${AWS::Region}_2"
+
+  LogsLogStream376:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "mxr-governance-global-cloudtrail-${EC2PrefixList.OwnerId}-logs"
+      LogStreamName: !Sub "${EC2PrefixList.OwnerId}_CloudTrail_${AWS::Region}_3"
+
+  LogsLogStream377:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Sub "mxr-governance-global-cloudtrail-${EC2PrefixList.OwnerId}-logs"
+      LogStreamName: !Sub "${EC2PrefixList.OwnerId}_CloudTrail_${AWS::Region}_4"

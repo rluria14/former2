@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "EC2 Instances"
+Parameters:
+  AvailabilityZone:
+    Description: Name of availibility zone
+    Type: String
+    Default: us-east-1
+Resources:
+  RDSDBInstance:
+    Type: "AWS::RDS::DBInstance"
+    Properties:
+      DBInstanceIdentifier: !Ref RDSDBParameterGroup
+      AllocatedStorage: 50
+      DBInstanceClass: "db.t4g.small"
+      Engine: "postgres"
+      MasterUsername: "postgres"
+      MasterUserPassword: "REPLACEME"
+      PreferredBackupWindow: "08:28-08:58"
+      BackupRetentionPeriod: 7
+      AvailabilityZone: !GetAtt EC2Subnet2.AvailabilityZone
+      PreferredMaintenanceWindow: "sat:07:09-sat:07:39"
+      MultiAZ: true
+      EngineVersion: "13.10"
+      AutoMinorVersionUpgrade: true
+      LicenseModel: "postgresql-license"
+      PubliclyAccessible: false
+      StorageType: "gp2"
+      Port: 5432
+      StorageEncrypted: true
+      KmsKeyId: !Sub "arn:aws:kms:${AWS::Region}:${EC2PrefixList.OwnerId}:key/c329bfeb-c72f-4e4f-9340-38eed1543b54"
+      CopyTagsToSnapshot: true
+      MonitoringInterval: 60
+      EnableIAMDatabaseAuthentication: false
+      EnablePerformanceInsights: true
+      PerformanceInsightsKMSKeyId: !Sub "arn:aws:kms:${AWS::Region}:${EC2PrefixList.OwnerId}:key/c329bfeb-c72f-4e4f-9340-38eed1543b54"
+      PerformanceInsightsRetentionPeriod: 7
+      DeletionProtection: true
+      DBSubnetGroupName: !Sub "${ECSCluster2}-${EC2VPC}"
+      VPCSecurityGroups:
+        - !Ref EC2SecurityGroup4
+      MaxAllocatedStorage: 1000
+      DBParameterGroupName: !Ref RDSDBParameterGroup
+      OptionGroupName: !Sub "${ECSCluster2}:postgres-13"
+      MonitoringRoleArn: !Sub "arn:aws:iam::${EC2PrefixList.OwnerId}:role/${IAMRole23}"
+      CACertificateIdentifier: "rds-ca-2019"
+
+  RDSDBSubnetGroup:
+    Type: "AWS::RDS::DBSubnetGroup"
+    Properties:
+      DBSubnetGroupDescription: "Created from the RDS Management Console"
+      DBSubnetGroupName: !Sub "${ECSCluster2}-${EC2VPC}"
+      SubnetIds:
+        - !Ref EC2Subnet2
+        - !Ref EC2Subnet4
+        - !Ref EC2Subnet5
+        - !Ref EC2Subnet6
+
+  RDSDBSubnetGroup2:
+    Type: "AWS::RDS::DBSubnetGroup"
+    Properties:
+      DBSubnetGroupDescription: "Private subnet group for Scarif"
+      DBSubnetGroupName: "private subnet group"
+      SubnetIds:
+        - !Ref EC2Subnet2
+        - !Ref EC2Subnet5
+        - !Ref EC2Subnet6
+
+  RDSDBParameterGroup:
+    Type: "AWS::RDS::DBParameterGroup"
+    Properties:
+      DBClusterParameterGroupName: !Ref RDSDBInstance
+      Description: !Ref RDSDBInstance
+      Family: "postgres13"
+      Parameters:
+        "cron.database_name": !Ref RDSDBInstance
+        shared_preload_libraries: "pg_stat_statements,pg_cron"

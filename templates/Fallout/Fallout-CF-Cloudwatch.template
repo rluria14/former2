@@ -1,0 +1,85 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Cloudwatch Alarms"
+Parameters:
+  AvailabilityZone:
+    Description: Name of availibility zone
+    Type: String
+    Default: us-east-1
+Resources:
+  CloudWatchAlarm:
+    Type: "AWS::CloudWatch::Alarm"
+    Properties:
+      AlarmName: !Sub "${ECSService8.Name}-alarm"
+      ActionsEnabled: true
+      AlarmActions:
+        - !Sub "arn:aws:sns:${AWS::Region}:${EC2PrefixList.OwnerId}:${SNSTopic.TopicName}"
+      EvaluationPeriods: 1
+      DatapointsToAlarm: 1
+      ComparisonOperator: "LessThanLowerOrGreaterThanUpperThreshold"
+      TreatMissingData: "missing"
+      Metrics:
+        - Id: "m1"
+          MetricStat:
+            Metric:
+              Namespace: "AWS/ECS"
+              MetricName: "CPUUtilization"
+              Dimensions:
+                - Name: "ServiceName"
+                  Value: !GetAtt ECSService8.Name
+                - Name: "ClusterName"
+                  Value: !Ref ECSCluster4
+            Period: 60
+            Stat: "Average"
+          ReturnData: true
+        - Id: "ad1"
+          Expression: "ANOMALY_DETECTION_BAND(m1, 1)"
+          Label: "CPUUtilization (expected)"
+          ReturnData: true
+      ThresholdMetricId: "ad1"
+
+  CloudWatchAlarm2:
+    Type: "AWS::CloudWatch::Alarm"
+    Properties:
+      AlarmName: !Sub "${S3Bucket17}-worker-required"
+      ActionsEnabled: true
+      AlarmActions:
+        - !Sub "arn:aws:autoscaling:${AWS::Region}:${EC2PrefixList.OwnerId}:scalingPolicy:d8966b21-3831-4256-8778-cb683845a94f:resource/ecs/service/${ECSCluster3}/${S3Bucket17}-pipeline:policyName/ScaleOutPolicy"
+      MetricName: "gn_worker"
+      Namespace: "rabbitmq.depth"
+      Statistic: "Maximum"
+      Period: 60
+      EvaluationPeriods: 1
+      DatapointsToAlarm: 1
+      Threshold: 1
+      ComparisonOperator: "GreaterThanOrEqualToThreshold"
+      TreatMissingData: "missing"
+
+  CloudWatchAlarm3:
+    Type: "AWS::CloudWatch::Alarm"
+    Properties:
+      AlarmName: !Sub "no-${S3Bucket17}-worker-required"
+      ActionsEnabled: true
+      AlarmActions:
+        - !Sub "arn:aws:autoscaling:${AWS::Region}:${EC2PrefixList.OwnerId}:scalingPolicy:d8966b21-3831-4256-8778-cb683845a94f:resource/ecs/service/${ECSCluster3}/${S3Bucket17}-pipeline:policyName/ScaleInPolicy"
+      MetricName: "gn_worker"
+      Namespace: "rabbitmq.depth"
+      Statistic: "Maximum"
+      Period: 60
+      EvaluationPeriods: 60
+      DatapointsToAlarm: 60
+      Threshold: 1
+      ComparisonOperator: "LessThanThreshold"
+      TreatMissingData: "missing"
+
+  CloudWatchAnomalyDetector:
+    Type: "AWS::CloudWatch::AnomalyDetector"
+    Properties:
+      MetricName: "CPUUtilization"
+      Namespace: "AWS/ECS"
+      Stat: "Average"
+      Configuration: { }
+      Dimensions:
+        - Name: "ServiceName"
+          Value: !GetAtt ECSService8.Name
+        - Name: "ClusterName"
+          Value: !Ref ECSCluster4

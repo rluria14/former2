@@ -1,0 +1,1121 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "EC2 Instances"
+Parameters:
+  AvailabilityZone:
+    Description: Name of availibility zone
+    Type: String
+    Default: us-east-1
+Resources:
+  S3Bucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Sub "aws-glue-scripts-${EC2PrefixList.OwnerId}-${AWS::Region}"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      LoggingConfiguration:
+        DestinationBucketName: !Ref S3Bucket13
+        LogFilePrefix: !Sub "s3/aws-glue-scripts-${EC2PrefixList.OwnerId}-${AWS::Region}/"
+      VersioningConfiguration:
+        Status: "Enabled"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket2:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: "deployement-alpha"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: "BucketOwnerEnforced"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket3:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: "factrac-api-s3"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      LoggingConfiguration:
+        DestinationBucketName: !Ref S3Bucket13
+        LogFilePrefix: "s3/factrac-api-s3/"
+      VersioningConfiguration:
+        Status: "Enabled"
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: "BucketOwnerPreferred"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket4:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Sub "config-bucket-${EC2PrefixList.OwnerId}"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      LoggingConfiguration:
+        DestinationBucketName: !Ref S3Bucket13
+        LogFilePrefix: !Sub "s3/config-bucket-${EC2PrefixList.OwnerId}/"
+      VersioningConfiguration:
+        Status: "Enabled"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket5:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: "fallout-api-s3"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      LoggingConfiguration:
+        DestinationBucketName: !Ref S3Bucket13
+        LogFilePrefix: "s3/fallout-api-s3/"
+      VersioningConfiguration:
+        Status: "Enabled"
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: "BucketOwnerPreferred"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket6:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: "fallout-mock-data"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: "BucketOwnerEnforced"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket7:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Sub "aws-glue-temporary-${EC2PrefixList.OwnerId}-${AWS::Region}"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      LoggingConfiguration:
+        DestinationBucketName: !Ref S3Bucket13
+        LogFilePrefix: !Sub "s3/aws-glue-temporary-${EC2PrefixList.OwnerId}-${AWS::Region}/"
+      VersioningConfiguration:
+        Status: "Enabled"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket8:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: "factrac-ui-s3"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      LoggingConfiguration:
+        DestinationBucketName: !Ref S3Bucket13
+        LogFilePrefix: "s3/factrac-ui-s3/"
+      VersioningConfiguration:
+        Status: "Enabled"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket9:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: "fallout-dataset"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      LoggingConfiguration:
+        DestinationBucketName: !Ref S3Bucket13
+        LogFilePrefix: "s3/fallout-dataset/"
+      VersioningConfiguration:
+        Status: "Enabled"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket10:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Sub "mxr-${S3Bucket15}-state"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      LoggingConfiguration:
+        DestinationBucketName: !Ref S3Bucket13
+        LogFilePrefix: !Sub "s3/mxr-${S3Bucket15}-state/"
+      VersioningConfiguration:
+        Status: "Enabled"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket11:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: "github-workflow-bundles"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      VersioningConfiguration:
+        Status: "Enabled"
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: "BucketOwnerEnforced"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket12:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: "redwing-sub-test"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      LoggingConfiguration:
+        DestinationBucketName: !Ref S3Bucket13
+        LogFilePrefix: "s3/redwing-sub-test/"
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: "BucketOwnerEnforced"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket13:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Sub "mxr-gov-aws-access-logs-bucket-${EC2PrefixList.OwnerId}-${AWS::Region}"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      LoggingConfiguration:
+        DestinationBucketName: !Sub "mxr-gov-aws-access-logs-bucket-${EC2PrefixList.OwnerId}-${AWS::Region}"
+        LogFilePrefix: !Sub "s3/mxr-gov-aws-access-logs-bucket-${EC2PrefixList.OwnerId}-${AWS::Region}/"
+      VersioningConfiguration:
+        Status: "Enabled"
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: "BucketOwnerEnforced"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket14:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: "fallout-alb-logs"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      LoggingConfiguration:
+        DestinationBucketName: !Ref S3Bucket13
+        LogFilePrefix: "s3/fallout-alb-logs/"
+      VersioningConfiguration:
+        Status: "Enabled"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket15:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: "fallout-terraform"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      LoggingConfiguration:
+        DestinationBucketName: !Ref S3Bucket13
+        LogFilePrefix: "s3/fallout-terraform/"
+      VersioningConfiguration:
+        Status: "Enabled"
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: "BucketOwnerEnforced"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket16:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Sub "fallout-${ElasticLoadBalancingV2TargetGroup8.TargetGroupName}-s3"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      LoggingConfiguration:
+        DestinationBucketName: !Ref S3Bucket13
+        LogFilePrefix: !Sub "s3/fallout-${ElasticLoadBalancingV2TargetGroup8.TargetGroupName}-s3/"
+      VersioningConfiguration:
+        Status: "Enabled"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket17:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: "geonosis"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      LoggingConfiguration:
+        DestinationBucketName: !Ref S3Bucket13
+        LogFilePrefix: "s3/geonosis/"
+      VersioningConfiguration:
+        Status: "Enabled"
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: "BucketOwnerEnforced"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket18:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: "fallout-up"
+      Tags:
+        - Key: "AccessLogsBucket"
+          Value: "true"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      LoggingConfiguration:
+        DestinationBucketName: !Ref S3Bucket13
+        LogFilePrefix: "s3/fallout-up/"
+      VersioningConfiguration:
+        Status: "Enabled"
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: "BucketOwnerEnforced"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket19:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: "factrac-env-s3"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      VersioningConfiguration:
+        Status: "Enabled"
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: "ObjectWriter"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket20:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: "github-workflow-cypress"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      VersioningConfiguration:
+        Status: "Enabled"
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: "BucketOwnerEnforced"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket21:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: "test-ansible-ec2-ssm2"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: "BucketOwnerEnforced"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket22:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: "whiteboard-api-s3"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      LoggingConfiguration:
+        DestinationBucketName: !Ref S3Bucket13
+        LogFilePrefix: "s3/whiteboard-api-s3/"
+      VersioningConfiguration:
+        Status: "Enabled"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket23:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: "fallout-env-s3"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      LoggingConfiguration:
+        DestinationBucketName: !Ref S3Bucket13
+        LogFilePrefix: "s3/fallout-env-s3/"
+      VersioningConfiguration:
+        Status: "Enabled"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket24:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Sub "mxr-gov-aws-access-logs-bucket-${EC2PrefixList.OwnerId}-us-east-2"
+      Tags:
+        - Key: "aws:cloudformation:stack-name"
+          Value: !Sub "SC-${EC2PrefixList.OwnerId}-pp-lf2jnh54a66kc"
+        - Key: "aws:cloudformation:stack-id"
+          Value: !Sub "arn:aws:cloudformation:us-east-2:${EC2PrefixList.OwnerId}:stack/SC-${EC2PrefixList.OwnerId}-pp-lf2jnh54a66kc/d6a1df50-7674-11ed-b6e5-0a9db28fc6a2"
+        - Key: "version"
+          Value: "v3"
+        - Key: "aws:servicecatalog:portfolioArn"
+          Value: "arn:aws:catalog:us-east-2:754775651946:portfolio/port-xgboir2yxq7ha"
+        - Key: "Contact"
+          Value: "aws-governance@maxar.com"
+        - Key: "Name"
+          Value: !Sub "mxr-gov-aws-access-logs-bucket-${EC2PrefixList.OwnerId}-us-east-2"
+        - Key: "ServiceCatalogPuppet:Actor"
+          Value: "Generated"
+        - Key: "aws:servicecatalog:productArn"
+          Value: "arn:aws:catalog:us-east-2:754775651946:product/prod-iztjrp33l5yps"
+        - Key: "Project"
+          Value: "aws-governance"
+        - Key: "aws:servicecatalog:provisioningPrincipalArn"
+          Value: !Sub "arn:aws:sts::${EC2PrefixList.OwnerId}:assumed-role/${IAMRole27}/${EC2PrefixList.OwnerId}-us-east-2-${IAMRole27}"
+        - Key: "launch_name"
+          Value: "mxr-governance-aws-access-logs-bucket"
+        - Key: "Department"
+          Value: "aws-governance"
+        - Key: "Environment"
+          Value: "prod"
+        - Key: "aws:cloudformation:logical-id"
+          Value: "AWSLoggingBucket"
+        - Key: "Component"
+          Value: "aws-access-logs-bucket"
+        - Key: "aws:servicecatalog:provisioningArtifactIdentifier"
+          Value: "pa-rlcj6xeanlszq"
+        - Key: "AccessLogsBucket"
+          Value: "true"
+        - Key: "aws:servicecatalog:provisionedProductArn"
+          Value: !Sub "arn:aws:servicecatalog:us-east-2:${EC2PrefixList.OwnerId}:stack/mxr-governance-aws-access-logs-bucket/pp-lf2jnh54a66kc"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      LifecycleConfiguration:
+        Rules:
+          - Id: "NTI3NTAwNWUtMGFjYS00NDNmLTg4NTQtMjljMTk0MDAwNDQ3"
+            Status: "Enabled"
+            ExpirationInDays: 90
+            NoncurrentVersionExpirationInDays: 90
+            NoncurrentVersionTransitions:
+              - TransitionInDays: 30
+                StorageClass: "STANDARD_IA"
+            Transitions:
+              - TransitionInDays: 30
+                StorageClass: "STANDARD_IA"
+      VersioningConfiguration:
+        Status: "Suspended"
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: "BucketOwnerPreferred"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket25:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Sub "mxr-gov-aws-access-logs-bucket-${EC2PrefixList.OwnerId}-us-west-1"
+      Tags:
+        - Key: "aws:cloudformation:stack-name"
+          Value: !Sub "SC-${EC2PrefixList.OwnerId}-pp-d4jy6ro3dri4a"
+        - Key: "aws:cloudformation:stack-id"
+          Value: !Sub "arn:aws:cloudformation:us-west-1:${EC2PrefixList.OwnerId}:stack/SC-${EC2PrefixList.OwnerId}-pp-d4jy6ro3dri4a/267841e0-7675-11ed-aff5-029c50a51cab"
+        - Key: "version"
+          Value: "v3"
+        - Key: "aws:servicecatalog:portfolioArn"
+          Value: "arn:aws:catalog:us-west-1:754775651946:portfolio/port-5qe5nwuwwx47e"
+        - Key: "Contact"
+          Value: "aws-governance@maxar.com"
+        - Key: "Name"
+          Value: !Sub "mxr-gov-aws-access-logs-bucket-${EC2PrefixList.OwnerId}-us-west-1"
+        - Key: "ServiceCatalogPuppet:Actor"
+          Value: "Generated"
+        - Key: "aws:servicecatalog:productArn"
+          Value: "arn:aws:catalog:us-west-1:754775651946:product/prod-xz2y24xhrymue"
+        - Key: "Project"
+          Value: "aws-governance"
+        - Key: "aws:servicecatalog:provisioningPrincipalArn"
+          Value: !Sub "arn:aws:sts::${EC2PrefixList.OwnerId}:assumed-role/${IAMRole27}/${EC2PrefixList.OwnerId}-us-west-1-${IAMRole27}"
+        - Key: "launch_name"
+          Value: "mxr-governance-aws-access-logs-bucket"
+        - Key: "Department"
+          Value: "aws-governance"
+        - Key: "Environment"
+          Value: "prod"
+        - Key: "aws:cloudformation:logical-id"
+          Value: "AWSLoggingBucket"
+        - Key: "Component"
+          Value: "aws-access-logs-bucket"
+        - Key: "aws:servicecatalog:provisioningArtifactIdentifier"
+          Value: "pa-ttsjemp3c6cju"
+        - Key: "AccessLogsBucket"
+          Value: "true"
+        - Key: "aws:servicecatalog:provisionedProductArn"
+          Value: !Sub "arn:aws:servicecatalog:us-west-1:${EC2PrefixList.OwnerId}:stack/mxr-governance-aws-access-logs-bucket/pp-d4jy6ro3dri4a"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      LifecycleConfiguration:
+        Rules:
+          - Id: "N2MxZGMzMTgtMjczMi00NTNmLTgxYTItZTM0MmQwODdlYzhi"
+            Status: "Enabled"
+            ExpirationInDays: 90
+            NoncurrentVersionExpirationInDays: 90
+            NoncurrentVersionTransitions:
+              - TransitionInDays: 30
+                StorageClass: "STANDARD_IA"
+            Transitions:
+              - TransitionInDays: 30
+                StorageClass: "STANDARD_IA"
+      VersioningConfiguration:
+        Status: "Suspended"
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: "BucketOwnerPreferred"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  S3Bucket26:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Sub "mxr-gov-aws-access-logs-bucket-${EC2PrefixList.OwnerId}-us-west-2"
+      Tags:
+        - Key: "aws:cloudformation:stack-name"
+          Value: !Sub "SC-${EC2PrefixList.OwnerId}-pp-zmlogswnhekga"
+        - Key: "aws:cloudformation:stack-id"
+          Value: !Sub "arn:aws:cloudformation:us-west-2:${EC2PrefixList.OwnerId}:stack/SC-${EC2PrefixList.OwnerId}-pp-zmlogswnhekga/6676bb80-7672-11ed-9d30-06f2fe3b591b"
+        - Key: "version"
+          Value: "v3"
+        - Key: "aws:servicecatalog:portfolioArn"
+          Value: "arn:aws:catalog:us-west-2:754775651946:portfolio/port-mo4k62lyr4rq6"
+        - Key: "Contact"
+          Value: "aws-governance@maxar.com"
+        - Key: "Name"
+          Value: !Sub "mxr-gov-aws-access-logs-bucket-${EC2PrefixList.OwnerId}-us-west-2"
+        - Key: "ServiceCatalogPuppet:Actor"
+          Value: "Generated"
+        - Key: "aws:servicecatalog:productArn"
+          Value: "arn:aws:catalog:us-west-2:754775651946:product/prod-gqszxqctdlk2c"
+        - Key: "Project"
+          Value: "aws-governance"
+        - Key: "aws:servicecatalog:provisioningPrincipalArn"
+          Value: !Sub "arn:aws:sts::${EC2PrefixList.OwnerId}:assumed-role/${IAMRole27}/${EC2PrefixList.OwnerId}-us-west-2-${IAMRole27}"
+        - Key: "launch_name"
+          Value: "mxr-governance-aws-access-logs-bucket"
+        - Key: "Department"
+          Value: "aws-governance"
+        - Key: "Environment"
+          Value: "prod"
+        - Key: "aws:cloudformation:logical-id"
+          Value: "AWSLoggingBucket"
+        - Key: "Component"
+          Value: "aws-access-logs-bucket"
+        - Key: "aws:servicecatalog:provisioningArtifactIdentifier"
+          Value: "pa-qev42kmi5ss3i"
+        - Key: "AccessLogsBucket"
+          Value: "true"
+        - Key: "aws:servicecatalog:provisionedProductArn"
+          Value: !Sub "arn:aws:servicecatalog:us-west-2:${EC2PrefixList.OwnerId}:stack/mxr-governance-aws-access-logs-bucket/pp-zmlogswnhekga"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: "AES256"
+            BucketKeyEnabled: false
+      LifecycleConfiguration:
+        Rules:
+          - Id: "N2E5YmI2YjUtODQ1NS00YzIwLThmMmQtNzg0ZTIxZGJjNDlj"
+            Status: "Enabled"
+            ExpirationInDays: 90
+            NoncurrentVersionExpirationInDays: 90
+            NoncurrentVersionTransitions:
+              - TransitionInDays: 30
+                StorageClass: "STANDARD_IA"
+            Transitions:
+              - TransitionInDays: 30
+                StorageClass: "STANDARD_IA"
+      VersioningConfiguration:
+        Status: "Suspended"
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: "BucketOwnerPreferred"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+    S3BucketPolicy:
+        Type: "AWS::S3::BucketPolicy"
+        Properties:
+            Bucket: !Ref S3Bucket3
+            PolicyDocument:
+                Version: "2012-10-17"
+                Id: "Policy1611277539797"
+                Statement:
+                  -
+                    Sid: "Stmt1611277535086"
+                    Effect: "Allow"
+                    Principal:
+                        AWS: !Sub "arn:aws:iam::798014845009:role/${IAMGroup}"
+                    Action: "s3:PutObject"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket3}/*"
+                    Condition:
+                        StringEquals:
+                            "s3:x-amz-acl": "bucket-owner-full-control"
+                  -
+                    Sid: "Stmt1611277877767"
+                    Effect: "Allow"
+                    Principal:
+                        AWS: !Sub "arn:aws:iam::798014845009:role/${IAMGroup}"
+                    Action: "s3:ListBucket"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket3}"
+
+    S3BucketPolicy2:
+        Type: "AWS::S3::BucketPolicy"
+        Properties:
+            Bucket: !Ref S3Bucket8
+            PolicyDocument:
+                Version: "2012-10-17"
+                Id: "Policy1611277539797"
+                Statement:
+                  -
+                    Sid: "Stmt1611277535086"
+                    Effect: "Allow"
+                    Principal:
+                        AWS: !Sub "arn:aws:iam::798014845009:role/${IAMGroup}"
+                    Action: "s3:PutObject"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket8}/*"
+                    Condition:
+                        StringEquals:
+                            "s3:x-amz-acl": "bucket-owner-full-control"
+                  -
+                    Sid: "Stmt1611277877767"
+                    Effect: "Allow"
+                    Principal:
+                        AWS: !Sub "arn:aws:iam::798014845009:role/${IAMGroup}"
+                    Action: "s3:ListBucket"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket8}"
+
+    S3BucketPolicy3:
+        Type: "AWS::S3::BucketPolicy"
+        Properties:
+            Bucket: !Ref S3Bucket9
+            PolicyDocument:
+                Version: "2012-10-17"
+                Id: "Policy1611277539797"
+                Statement:
+                  -
+                    Sid: "Stmt1611277535086"
+                    Effect: "Allow"
+                    Principal:
+                        AWS: !Sub "arn:aws:iam::798014845009:role/${IAMGroup}"
+                    Action: "s3:PutObject"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket9}/*"
+                    Condition:
+                        StringEquals:
+                            "s3:x-amz-acl": "bucket-owner-full-control"
+                  -
+                    Sid: "Stmt1611277877767"
+                    Effect: "Allow"
+                    Principal:
+                        AWS: !Sub "arn:aws:iam::798014845009:role/${IAMGroup}"
+                    Action: "s3:ListBucket"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket9}"
+
+    S3BucketPolicy4:
+        Type: "AWS::S3::BucketPolicy"
+        Properties:
+            Bucket: !Ref S3Bucket10
+            PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                  -
+                    Sid: "AllowTLSRequestsOnly"
+                    Effect: "Deny"
+                    Principal: "*"
+                    Action: "s3:*"
+                    Resource:
+                      - !Sub "arn:aws:s3:::${S3Bucket10}"
+                      - !Sub "arn:aws:s3:::${S3Bucket10}/*"
+                    Condition:
+                        Bool:
+                            "aws:SecureTransport": "false"
+
+    S3BucketPolicy5:
+        Type: "AWS::S3::BucketPolicy"
+        Properties:
+            Bucket: !Ref S3Bucket11
+            PolicyDocument:
+                Version: "2012-10-17"
+                Id: "Policy1611277539797"
+                Statement:
+                  -
+                    Sid: "Stmt1611277535086"
+                    Effect: "Allow"
+                    Principal:
+                        AWS: !Sub "arn:aws:iam::798014845009:role/${IAMGroup}"
+                    Action: "s3:PutObject"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket11}/*"
+                    Condition:
+                        StringEquals:
+                            "s3:x-amz-acl": "bucket-owner-full-control"
+                  -
+                    Sid: "Stmt1611277877767"
+                    Effect: "Allow"
+                    Principal:
+                        AWS: !Sub "arn:aws:iam::798014845009:role/${IAMGroup}"
+                    Action: "s3:ListBucket"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket11}"
+
+    S3BucketPolicy6:
+        Type: "AWS::S3::BucketPolicy"
+        Properties:
+            Bucket: !Ref S3Bucket14
+            PolicyDocument:
+                Version: "2012-10-17"
+                Id: "AWSConsole-AccessLogs-Policy-1651510708562"
+                Statement:
+                  -
+                    Sid: "AWSConsoleStmt-1651510708562"
+                    Effect: "Allow"
+                    Principal:
+                        AWS: "arn:aws:iam::127311923021:root"
+                    Action: "s3:PutObject"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket14}/AWSLogs/${EC2PrefixList.OwnerId}/*"
+                  -
+                    Sid: "AWSLogDeliveryWrite"
+                    Effect: "Allow"
+                    Principal:
+                        Service: "delivery.logs.amazonaws.com"
+                    Action: "s3:PutObject"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket14}/AWSLogs/${EC2PrefixList.OwnerId}/*"
+                    Condition:
+                        StringEquals:
+                            "s3:x-amz-acl": "bucket-owner-full-control"
+                  -
+                    Sid: "AWSLogDeliveryAclCheck"
+                    Effect: "Allow"
+                    Principal:
+                        Service: "delivery.logs.amazonaws.com"
+                    Action: "s3:GetBucketAcl"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket14}"
+
+    S3BucketPolicy7:
+        Type: "AWS::S3::BucketPolicy"
+        Properties:
+            Bucket: !Ref S3Bucket16
+            PolicyDocument:
+                Version: "2012-10-17"
+                Id: "Policy1611277539797"
+                Statement:
+                  -
+                    Sid: "Stmt1611277535086"
+                    Effect: "Allow"
+                    Principal:
+                        AWS: !Sub "arn:aws:iam::798014845009:role/${IAMGroup}"
+                    Action: "s3:PutObject"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket16}/*"
+                    Condition:
+                        StringEquals:
+                            "s3:x-amz-acl": "bucket-owner-full-control"
+                  -
+                    Sid: "Stmt1611277877767"
+                    Effect: "Allow"
+                    Principal:
+                        AWS: !Sub "arn:aws:iam::798014845009:role/${IAMGroup}"
+                    Action: "s3:ListBucket"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket16}"
+
+    S3BucketPolicy8:
+        Type: "AWS::S3::BucketPolicy"
+        Properties:
+            Bucket: !Ref S3Bucket18
+            PolicyDocument:
+                Version: "2012-10-17"
+                Id: "Policy1661273718111"
+                Statement:
+                  -
+                    Sid: "Stmt1661273514223"
+                    Effect: "Allow"
+                    Principal:
+                        AWS: "arn:aws:iam::736830665339:role/s3_reader_ec2"
+                    Action: "s3:GetObject"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket18}/*"
+                  -
+                    Sid: "Stmt1661273514224"
+                    Effect: "Allow"
+                    Principal:
+                        AWS: "arn:aws:iam::736830665339:role/s3_reader_ec2"
+                    Action: "s3:ListBucket"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket18}"
+
+    S3BucketPolicy9:
+        Type: "AWS::S3::BucketPolicy"
+        Properties:
+            Bucket: !Ref S3Bucket4
+            PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                  -
+                    Sid: "AWSConfigBucketPermissionsCheck"
+                    Effect: "Allow"
+                    Principal:
+                        Service: "config.amazonaws.com"
+                    Action: "s3:GetBucketAcl"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket4}"
+                    Condition:
+                        StringEquals:
+                            "AWS:SourceAccount": !GetAtt EC2PrefixList.OwnerId
+                  -
+                    Sid: "AWSConfigBucketExistenceCheck"
+                    Effect: "Allow"
+                    Principal:
+                        Service: "config.amazonaws.com"
+                    Action: "s3:ListBucket"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket4}"
+                    Condition:
+                        StringEquals:
+                            "AWS:SourceAccount": !GetAtt EC2PrefixList.OwnerId
+                  -
+                    Sid: "AWSConfigBucketDelivery"
+                    Effect: "Allow"
+                    Principal:
+                        Service: "config.amazonaws.com"
+                    Action: "s3:PutObject"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket4}/AWSLogs/${EC2PrefixList.OwnerId}/Config/*"
+                    Condition:
+                        StringEquals:
+                            "s3:x-amz-acl": "bucket-owner-full-control"
+                            "AWS:SourceAccount": !GetAtt EC2PrefixList.OwnerId
+
+    S3BucketPolicy10:
+        Type: "AWS::S3::BucketPolicy"
+        Properties:
+            Bucket: !Ref S3Bucket22
+            PolicyDocument:
+                Version: "2012-10-17"
+                Id: "Policy1611277539797"
+                Statement:
+                  -
+                    Sid: "Stmt1611277535086"
+                    Effect: "Allow"
+                    Principal:
+                        AWS: !Sub "arn:aws:iam::798014845009:role/${IAMGroup}"
+                    Action: "s3:PutObject"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket22}/*"
+                    Condition:
+                        StringEquals:
+                            "s3:x-amz-acl": "bucket-owner-full-control"
+                  -
+                    Sid: "Stmt1611277877767"
+                    Effect: "Allow"
+                    Principal:
+                        AWS: !Sub "arn:aws:iam::798014845009:role/${IAMGroup}"
+                    Action: "s3:ListBucket"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket22}"
+
+    S3BucketPolicy11:
+        Type: "AWS::S3::BucketPolicy"
+        Properties:
+            Bucket: !Ref S3Bucket23
+            PolicyDocument:
+                Version: "2012-10-17"
+                Id: "Policy1611277539797"
+                Statement:
+                  -
+                    Sid: "Stmt1611277535086"
+                    Effect: "Allow"
+                    Principal:
+                        AWS: !Sub "arn:aws:iam::798014845009:role/${IAMGroup}"
+                    Action: "s3:PutObject"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket23}/*"
+                    Condition:
+                        StringEquals:
+                            "s3:x-amz-acl": "bucket-owner-full-control"
+                  -
+                    Sid: "Stmt1611277877767"
+                    Effect: "Allow"
+                    Principal:
+                        AWS: !Sub "arn:aws:iam::798014845009:role/${IAMGroup}"
+                    Action: "s3:ListBucket"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket23}"
+
+    S3BucketPolicy12:
+        Type: "AWS::S3::BucketPolicy"
+        Properties:
+            Bucket: !Ref S3Bucket24
+            PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                  -
+                    Sid: "s3-access-logs"
+                    Effect: "Allow"
+                    Principal:
+                        Service: "logging.s3.amazonaws.com"
+                    Action: "s3:PutObject"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket24}/*"
+                  -
+                    Sid: "elb-regional-permissions"
+                    Effect: "Allow"
+                    Principal:
+                        AWS: "arn:aws:iam::033677994240:root"
+                    Action: "s3:PutObject"
+                    Resource:
+                      - !Sub "arn:aws:s3:::${S3Bucket24}/*/AWSLogs/${EC2PrefixList.OwnerId}/*"
+                      - !Sub "arn:aws:s3:::${S3Bucket24}/AWSLogs/${EC2PrefixList.OwnerId}/*"
+                  -
+                    Sid: "AWSLogDeliveryWrite"
+                    Effect: "Allow"
+                    Principal:
+                        Service: "delivery.logs.amazonaws.com"
+                    Action: "s3:PutObject"
+                    Resource:
+                      - !Sub "arn:aws:s3:::${S3Bucket24}/*/AWSLogs/${EC2PrefixList.OwnerId}/*"
+                      - !Sub "arn:aws:s3:::${S3Bucket24}/AWSLogs/${EC2PrefixList.OwnerId}/*"
+                    Condition:
+                        StringEquals:
+                            "s3:x-amz-acl": "bucket-owner-full-control"
+                  -
+                    Sid: "AWSLogDeliveryAclCheck"
+                    Effect: "Allow"
+                    Principal:
+                        Service: "delivery.logs.amazonaws.com"
+                    Action:
+                      - "s3:GetBucketAcl"
+                      - "s3:PutBucketAcl"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket24}"
+
+    S3BucketPolicy13:
+        Type: "AWS::S3::BucketPolicy"
+        Properties:
+            Bucket: !Ref S3Bucket25
+            PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                  -
+                    Sid: "s3-access-logs"
+                    Effect: "Allow"
+                    Principal:
+                        Service: "logging.s3.amazonaws.com"
+                    Action: "s3:PutObject"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket25}/*"
+                  -
+                    Sid: "elb-regional-permissions"
+                    Effect: "Allow"
+                    Principal:
+                        AWS: "arn:aws:iam::027434742980:root"
+                    Action: "s3:PutObject"
+                    Resource:
+                      - !Sub "arn:aws:s3:::${S3Bucket25}/*/AWSLogs/${EC2PrefixList.OwnerId}/*"
+                      - !Sub "arn:aws:s3:::${S3Bucket25}/AWSLogs/${EC2PrefixList.OwnerId}/*"
+                  -
+                    Sid: "AWSLogDeliveryWrite"
+                    Effect: "Allow"
+                    Principal:
+                        Service: "delivery.logs.amazonaws.com"
+                    Action: "s3:PutObject"
+                    Resource:
+                      - !Sub "arn:aws:s3:::${S3Bucket25}/*/AWSLogs/${EC2PrefixList.OwnerId}/*"
+                      - !Sub "arn:aws:s3:::${S3Bucket25}/AWSLogs/${EC2PrefixList.OwnerId}/*"
+                    Condition:
+                        StringEquals:
+                            "s3:x-amz-acl": "bucket-owner-full-control"
+                  -
+                    Sid: "AWSLogDeliveryAclCheck"
+                    Effect: "Allow"
+                    Principal:
+                        Service: "delivery.logs.amazonaws.com"
+                    Action:
+                      - "s3:GetBucketAcl"
+                      - "s3:PutBucketAcl"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket25}"
+
+    S3BucketPolicy14:
+        Type: "AWS::S3::BucketPolicy"
+        Properties:
+            Bucket: !Ref S3Bucket26
+            PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                  -
+                    Sid: "s3-access-logs"
+                    Effect: "Allow"
+                    Principal:
+                        Service: "logging.s3.amazonaws.com"
+                    Action: "s3:PutObject"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket26}/*"
+                  -
+                    Sid: "elb-regional-permissions"
+                    Effect: "Allow"
+                    Principal:
+                        AWS: "arn:aws:iam::797873946194:root"
+                    Action: "s3:PutObject"
+                    Resource:
+                      - !Sub "arn:aws:s3:::${S3Bucket26}/*/AWSLogs/${EC2PrefixList.OwnerId}/*"
+                      - !Sub "arn:aws:s3:::${S3Bucket26}/AWSLogs/${EC2PrefixList.OwnerId}/*"
+                  -
+                    Sid: "AWSLogDeliveryWrite"
+                    Effect: "Allow"
+                    Principal:
+                        Service: "delivery.logs.amazonaws.com"
+                    Action: "s3:PutObject"
+                    Resource:
+                      - !Sub "arn:aws:s3:::${S3Bucket26}/*/AWSLogs/${EC2PrefixList.OwnerId}/*"
+                      - !Sub "arn:aws:s3:::${S3Bucket26}/AWSLogs/${EC2PrefixList.OwnerId}/*"
+                    Condition:
+                        StringEquals:
+                            "s3:x-amz-acl": "bucket-owner-full-control"
+                  -
+                    Sid: "AWSLogDeliveryAclCheck"
+                    Effect: "Allow"
+                    Principal:
+                        Service: "delivery.logs.amazonaws.com"
+                    Action:
+                      - "s3:GetBucketAcl"
+                      - "s3:PutBucketAcl"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket26}"
